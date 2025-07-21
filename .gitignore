@@ -1,0 +1,7 @@
+build/
+.vscode/
+PACKAGE/
+releases/
+
+/plan.txt
+/logs.txt
