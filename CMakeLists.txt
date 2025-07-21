@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     message(STATUS "CMake install prefix is set to ${CMAKE_SOURCE_DIR}/install")
-    set(${CMAKE_INSTALL_PREFIX} ${CMAKE_SOURCE_DIR}/install STRING CACHE "Install prefix" FORCE)
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/install" CACHE STRING "Install prefix" FORCE)
 endif()
 
 # Add executable

@@ -1,4 +1,4 @@
-#include "cli.h"
+#include "cli/cli.h"
 
 #include <iostream>
 
@@ -13,7 +13,7 @@ void App::run(int argc, const char* argv[]){
         it->second(argc,argv);
     } else {
         std::cout << "Command not found.\n";
-        std::cout << "Use '.\quiz.exe help' to read about available commands.";
+        std::cout << "Use '.\\quiz.exe help' to read about available commands.";
     }
 
     return;

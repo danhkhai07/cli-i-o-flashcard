@@ -2,6 +2,7 @@ build/
 .vscode/
 PACKAGE/
 releases/
+install/
 
 /plan.txt
 /logs.txt
