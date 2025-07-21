@@ -1,13 +1,20 @@
 #pragma once
 
+#include "commands.h"
+
 #include <unordered_map>
 #include <string>
 #include <functional>
 
+
 class App{
     public:
         // Default constructor and destructor
-        App(){};
+        App(){
+            functionMap["help"] = Command::help;
+            functionMap["learn"] = Command::learn;
+            functionMap["item"] = Command::item;
+        };
         ~App(){};
 
         void run(int agrc, const char* agrv[]);

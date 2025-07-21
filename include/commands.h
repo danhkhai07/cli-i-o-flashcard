@@ -1,8 +1,10 @@
 #pragma once
 
 namespace Command {
-    void help(int agrc, const char* agrv[]);
-    void learn(int agrc, const char* agrv[]);
-    void addItem(int agrc, const char* agrv[]);
-    void showItemList(int agrc, const char* agrv[]);
+    void help(int argc, const char* argv[]);
+    void learn(int argc, const char* argv[]);
+    
+    void item(int argc, const char* argv[]);
+    void itemAdd(int argc, const char* argv[]);
+    void itemList(int argc, const char* argv[]);
 }
