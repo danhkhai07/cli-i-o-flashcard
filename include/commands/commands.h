@@ -10,19 +10,23 @@ class Command {
     public:
         Command(){
             // Root
-            addCommandNode("root", Specifier::None);
+            addCommandNode("root", Specifier::None); // 0
             // 1st layer
-            addCommandNode("help", Specifier::None, 0, Zeus);
-            addCommandNode("set", Specifier::Set, 0, Zeus);
-            addCommandNode("learn", Specifier::Set, 0, Zeus);
-            addCommandNode("about", Specifier::None, 0, Zeus);
+            addCommandNode("help", Specifier::None, 0, Zeus); // 1
+            addCommandNode("set", Specifier::Set, 0, Zeus); // 2
+            addCommandNode("learn", Specifier::Set, 0); // 3
+            addCommandNode("about", Specifier::None, 0, Zeus); // 4
             // 2nd layer
-            addCommandNode("new", Specifier::None, 2, Zeus);
-            addCommandNode("kill", Specifier::None, 2, Zeus);
-            addCommandNode("delete", Specifier::Item, 2, Zeus);
-            addCommandNode("rename", Specifier::None, 2, Zeus);
-            addCommandNode("list", Specifier::None, 2, Zeus);
-            addCommandNode("add", Specifier::None, 2, Zeus);
+            addCommandNode("$set", Specifier::None, 2); // 5
+            addCommandNode("$set", Specifier::None, 3, Zeus); // 6
+            // 3rd layer
+            addCommandNode("new", Specifier::None, 5, Zeus); // 7
+            addCommandNode("kill", Specifier::None, 5, Zeus); // 8
+            addCommandNode("delete", Specifier::Item, 5); // 9
+            addCommandNode("rename", Specifier::None, 5, Zeus); // 10
+            addCommandNode("list", Specifier::None, 5, Zeus); // 11
+            addCommandNode("add", Specifier::None, 5, Zeus); // 12
+            addCommandNode("$item", Specifier::None, 9, Zeus); // 13
         }
         ~Command(){}
 
