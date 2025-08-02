@@ -11,7 +11,7 @@ class App{
         App(){};
         ~App(){};
 
-        void run(int agrc, const char* agrv[]);
+        void run(int agrc, char* agrv[]);
 
     private:
         // Declaring (but not defining) to disallow copy constructor and operator=
