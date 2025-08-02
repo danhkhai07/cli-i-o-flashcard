@@ -18,5 +18,4 @@ class App{
         App(const App&);
         App& operator=(const App&);
 
-        std::unordered_map<std::string,std::function<void(int, const char*[])>> functionMap;
 };

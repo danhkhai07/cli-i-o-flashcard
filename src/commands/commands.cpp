@@ -2,28 +2,43 @@
 
 #include <iostream>
 
-void Command::help(int argc, const char* argv[]){
-    std::cout << "'help' reached.";
+int Command::lookUp(int argc, const char* argv[], const int& level){
+    if 
+    // if 
+    
 }
 
-void Command::item(int argc, const char* argv[]){
-    std::cout << "'item' reached.\n";
-    if (std::string(argv[2]) == "add"){
-        itemAdd(argc, argv);
-    } 
-    else if (std::string(argv[2]) == "list"){
-        itemList(argc, argv);
-    }
+/// @brief Add new command node
+/// @param keyword 
+/// @param terminal 
+/// @param specExpected 
+void Command::addCommandNode(std::string keyword, bool specExpected){
+    CommandNode node(++nodeCount, keyword, keyword, false, specExpected, {});
+    cmdTree.push_back(node);
 }
 
-void Command::learn(int argc, const char* argv[]){
-    std::cout << "'learn' reached.";
+/// @brief Add new command node
+/// @param keyword 
+/// @param dependingNode 
+/// @param terminal 
+/// @param specExpected 
+void Command::addCommandNode(std::string keyword, int dependingNode, bool specExpected){
+    CommandNode& dnp = cmdTree[dependingNode];
+    CommandNode node(++nodeCount, dnp.name + "_" + keyword, keyword, false, specExpected, {});
+    cmdTree.push_back(node);
+    dnp.subordinates[keyword].push_back(std::ref(node));
 }
 
-void Command::itemAdd(int argc, const char* argv[]){
-    std::cout << "'item add' reached.";
-}
-
-void Command::itemList(int argc, const char* argv[]){
-    std::cout << "'item list' reached.";
+/// @brief Add new command node
+/// @param keyword 
+/// @param dependingNode 
+/// @param func 
+/// @param terminal 
+/// @param specExpected 
+void Command::addCommandNode(std::string keyword, int dependingNode, std::function<int(int, const char*[])> func,
+    bool terminal, bool specExpected){
+    CommandNode& dnp = cmdTree[dependingNode];
+    CommandNode node(++nodeCount, dnp.name + "_" + keyword, keyword, terminal, specExpected, func);
+    cmdTree.push_back(node);
+    dnp.subordinates[keyword].push_back(std::ref(node));
 }

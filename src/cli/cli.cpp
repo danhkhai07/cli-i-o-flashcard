@@ -5,6 +5,9 @@
 
 void App::run(int argc, const char* argv[]){
     Command cmd;
-    cmd.lookUp(argc, argv, 1);
+    if (cmd.lookUp(argc-1, argv+1, 1)){
+        std::cout << "Invalid argument.";
+        return;
+    }
     return;
 }
