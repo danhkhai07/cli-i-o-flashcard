@@ -4,11 +4,14 @@
 
 class Data {
     public:
+
+    private:
+        
+
         struct Card {
             std::string front, back;
 
-        };
 
-    private:
+        };
         
 };
