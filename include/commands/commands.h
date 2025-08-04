@@ -14,7 +14,7 @@ class Command {
             // 1st layer
             addCommandNode("help", Specifier::None, 0, Zeus); // 1
             addCommandNode("set", Specifier::Set, 0, Zeus); // 2
-            addCommandNode("learn", Specifier::Set, 0); // 3
+            addCommandNode("learn", Specifier::Set, 0, Zeus); // 3
             addCommandNode("about", Specifier::None, 0, Zeus); // 4
             // 2nd layer
             addCommandNode("$set", Specifier::None, 2); // 5
