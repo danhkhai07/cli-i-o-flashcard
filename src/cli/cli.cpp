@@ -10,9 +10,6 @@ void App::run(int argc, char* argv[]){
     // cmd.errorHandling(argc, argv, cmd.lookUp(1, argc, argv, 0).first);
     std::pair<int, int> exeResult = cmd.lookUp(0, argc, argv, 0);
     std::cout << " " << exeResult.first << ' ' << exeResult.second << "\n";
-
-    Data data;
-    data.test();
     /*
         a value
             -1: internal error
