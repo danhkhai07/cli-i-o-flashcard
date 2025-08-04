@@ -13,7 +13,6 @@ target_include_directories(Card PRIVATE ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(CLI PRIVATE Commands)
 target_link_libraries(Commands PRIVATE DataHandler)
 target_link_libraries(DataHandler PRIVATE Card)
-target_link_libraries(CLI PRIVATE DataHandler)
 
 # Install package
 install(TARGETS CLI Commands DataHandler Card
