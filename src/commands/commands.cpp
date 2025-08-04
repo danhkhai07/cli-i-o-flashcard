@@ -18,9 +18,8 @@ std::pair<int, int> Command::lookUp(int pos, int argc, char* argv[], const int& 
                 it = node.subordinates.find("$set");
                 break;
             case Specifier::Item:
-                try { std::stoi(argv[pos + 1]); }
+                try { itemPos = std::stoi(argv[pos + 1]); }
                 catch (std::logic_error) { return {1, pos + 1}; }
-                itemPos = std::stoi(argv[pos + 1]); 
                 it = node.subordinates.find("$item");
                 break;
             case Specifier::None:
