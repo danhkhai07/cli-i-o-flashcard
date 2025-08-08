@@ -39,11 +39,11 @@ void Card::review(const Grade& grade){
         {CardState::Review, [this](const Grade& grade){ reviewHandler(grade); } },
         {CardState::Lapse, [this](const Grade& grade){ lapseHandler(grade); } }
     };
-    printGradeTimeInt(); // pre production
+    // printGradeTimeInt(); // pre production
     stateHandler[state](grade);
     calculateGradeTimeIntervals();
     adjustInterval();
-    printNextReview(); // pre production
+    // printNextReview(); // pre production
 }
 
 void Card::printNextReview(){
