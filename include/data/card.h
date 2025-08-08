@@ -1,7 +1,7 @@
 #pragma once
 
-#include "date/date.h"
-// #include "../utils/date/date.h" // pre production
+#include "utils/nlohmann/json.hpp"
+#include "../utils/nlohmann/json.hpp"  // pre production
 
 #include <string>
 #include <vector>
@@ -11,7 +11,8 @@
 enum class Grade {Again, Hard, Good, Easy};
 enum class CardState {New, Learn, Review, Lapse};
 
-Grade inputToGrade(const std::string& input);
+Grade inputToGrade(std::string_view input);
+CardState inputToState(std::string_view input);
 
 struct Card {
     public:
@@ -23,6 +24,7 @@ struct Card {
         std::string lastRefresh;
 
         void review(const Grade& grade);
+        void read(const nlohmann::json& cardView);
         bool due();
 
     private:
@@ -30,7 +32,7 @@ struct Card {
         int currentStep = 0;
         double easeFactor = 2.5;
         double interval = 0;
-        std::vector<double> learningStep = {1.0/1440, 10.0/1440, 15.0/1440};
+        static const std::vector<double> learningStep;
         
         std::function<double(Grade)> mult = [this](Grade grade) {
             if (Grade::Hard == grade) return 1.2;
@@ -52,3 +54,5 @@ struct Card {
         void adjustEaseFactor(const Grade& grade);
         void adjustInterval();
 };
+
+const std::vector<double> Card::learningStep = {1.0/1440, 10.0/1440, 15.0/1440};

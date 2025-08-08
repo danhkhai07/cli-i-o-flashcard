@@ -1,8 +1,9 @@
 #include "data/card.h"
 // #include "../../include/data/card.h" // pre production
 
-#include <unordered_map>
-#include <functional>
+#include "date/date.h"
+// #include "../utils/date/date.h" // pre production
+
 #include <algorithm>
 #include <iostream>
 #include <iomanip>
@@ -18,11 +19,18 @@ const std::unordered_map<Grade, int> Card::presetLapseStep = {
     {Grade::Hard, 2}
 };
 
-Grade inputToGrade(const std::string& input) {
+Grade inputToGrade(std::string_view input) {
     static std::unordered_map<std::string, Grade> gradeMap = {
         { "Again", Grade::Again }, { "Hard", Grade::Hard }, { "Good", Grade::Good }, { "Easy", Grade::Easy }
     };
-    return gradeMap[input];
+    return gradeMap[std::string(input)];
+}
+
+CardState inputToState(std::string_view input) {
+    static std::unordered_map<std::string, CardState> stateMap = {
+        { "New", CardState::New }, { "Learn", CardState::Learn }, { "Review", CardState::Review }, { "Lapse", CardState::Lapse }
+    };
+    return stateMap[std::string(input)];
 }
 
 void Card::printGradeTimeInt(){
@@ -44,6 +52,32 @@ void Card::review(const Grade& grade){
     calculateGradeTimeIntervals();
     adjustInterval();
     // printNextReview(); // pre production
+}
+
+void Card::read(const nlohmann::json& cardView){
+    std::string tmp;
+    front = cardView["front"].get<std::string>();
+    back = cardView["back"].get<std::string>();
+    lastRefresh = cardView["lastRefresh"].get<std::string>();
+    state = inputToState(cardView["state"].get<std::string>());
+    currentStep = std::stoi(cardView["currentStep"].get<std::string>());
+    tmp = cardView["easeFactor"].get<std::string>();
+    easeFactor = std::atof(tmp.c_str());
+    tmp = cardView["interval"].get<std::string>();
+    interval = std::atof(tmp.c_str());
+}
+
+bool Card::due(){
+    using namespace std::chrono;
+
+    std::istringstream in(lastRefresh);
+    date::sys_time<seconds> last;
+    in >> date::parse("%F %T", last);
+    if (in.fail()) return false;
+    auto now = system_clock::now() + hours(7);
+    
+    auto elapsed = now - last;
+    return elapsed.count() >= (interval * 86400.0);
 }
 
 void Card::printNextReview(){
@@ -103,6 +137,7 @@ void Card::calculateGradeTimeIntervals(){
 }
 
 void Card::learnHandler(const Grade& grade){
+    state = CardState::Learn;
     interval = gradeTimeIntervals[grade];
     switch (grade)
     {
