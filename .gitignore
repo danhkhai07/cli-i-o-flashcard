@@ -3,6 +3,7 @@ build/
 PACKAGE/
 releases/
 install/
+tester/
 
 /plan.txt
 /logs.txt
