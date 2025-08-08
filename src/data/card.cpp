@@ -60,11 +60,9 @@ void Card::read(const nlohmann::json& cardView){
     back = cardView["back"].get<std::string>();
     lastRefresh = cardView["lastRefresh"].get<std::string>();
     state = inputToState(cardView["state"].get<std::string>());
-    currentStep = std::stoi(cardView["currentStep"].get<std::string>());
-    tmp = cardView["easeFactor"].get<std::string>();
-    easeFactor = std::atof(tmp.c_str());
-    tmp = cardView["interval"].get<std::string>();
-    interval = std::atof(tmp.c_str());
+    currentStep = cardView["currentStep"].get<int>();
+    easeFactor = cardView["easeFactor"].get<double>();
+    interval = cardView["interval"].get<double>();
 }
 
 bool Card::due(){

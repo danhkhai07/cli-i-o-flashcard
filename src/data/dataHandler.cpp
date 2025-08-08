@@ -35,11 +35,19 @@ int Data::addCard(std::string_view setName, Card card){
 
     if (!nameValid(setName)) return 1;
     if (!setExist(setName)) return 3; 
-    nlohmann::json& pData = dataset[setName];
+    if (setSize(setName) >= INT_MAX - 1) return 4;
+
+    nlohmann::json pData;
     pData["front"] = card.front;
     pData["back"] = card.back;
     auto now = system_clock::now() + hours(7);   
     pData["lastRefresh"] = date::format("%F %T", now);
+    pData["state"] = "New";
+    pData["currentStep"] = 0;
+    pData["easeFactor"] = 2.5;
+    pData["interval"] = 0;
+
+    dataset[setName].push_back(pData);
     save();
     return 0;
 }
@@ -49,7 +57,6 @@ int Data::listSets(std::vector<std::string>& out){
     for (auto it = dataset.begin(); it < dataset.end(); ++it){
         out.push_back(it.key());
     }
-    save();
     return 0;
 }
 
@@ -60,16 +67,14 @@ int Data::listCards(std::vector<nlohmann::json>& out, std::string_view setName){
     for (auto it = dataset[setName].begin(); it < dataset[setName].end(); ++it){
         out.push_back(*it);
     }
-    save();
     return 0;
 }
 
 bool Data::setExist(std::string_view setName){
-    bool flag = false;
     for (auto it = dataset.begin(); it < dataset.end(); ++it){
-        flag = (it.key() == setName);
+        if (it.key() == setName) return true;
     }
-    return flag;
+    return false;
 }
 
 // return the index (1-based) at which the card has the same front. returns -1 if no duplication
