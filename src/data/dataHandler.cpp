@@ -11,8 +11,8 @@ void Data::load(){
 void Data::open_io_gate(){
     if (!iquestions.is_open()) iquestions.close();
     if (!oquestions.is_open()) oquestions.close();
-    iquestions.open("../../../data/questions.json"); // pre production
-    oquestions.open("../../../data/questions.json"); // pre production
+    iquestions.open("questions.json", std::ios::in); // open for reading only
+    oquestions.open("questions.json", std::ios::in | std::ios::out); // open for read/write, do not truncate
     // if (!iquestions.is_open()) iquestions.open("questions.json");
     // if (!oquestions.is_open()) oquestions.open("questions.json");
 }
