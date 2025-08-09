@@ -12,6 +12,7 @@ class App{
         ~App(){};
 
         void run(int agrc, char* agrv[]);
+        void help(int argc, char* argv[], std::pair<int, int> errorOut);
 
     private:
         // Declaring (but not defining) to disallow copy constructor and operator=
