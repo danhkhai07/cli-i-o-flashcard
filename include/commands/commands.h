@@ -52,6 +52,16 @@ class Command {
 
     // EXECUTING FUNCTIONS
         std::pair<int, int> Zeus(int argc, char* argv[]);
+        std::pair<int, int> quiz_help(int argc, char* argv[]);
+        std::pair<int, int> quiz_set(int argc, char* argv[]);
+        std::pair<int, int> quiz_learn(int argc, char* argv[]);
+        std::pair<int, int> quiz_about(int argc, char* argv[]);
+        std::pair<int, int> quiz_set_new(int argc, char* argv[]);
+        std::pair<int, int> quiz_set_rename(int argc, char* argv[]);
+        std::pair<int, int> quiz_set_kill(int argc, char* argv[]);
+        std::pair<int, int> quiz_set_list(int argc, char* argv[]);
+        std::pair<int, int> quiz_set_add(int argc, char* argv[]);
+        std::pair<int, int> quiz_set_delete(int argc, char* argv[]);
 
     public:
         Command(){
