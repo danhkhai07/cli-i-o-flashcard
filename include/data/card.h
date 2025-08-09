@@ -1,7 +1,7 @@
 #pragma once
 
 #include "utils/nlohmann/json.hpp"
-#include "../utils/nlohmann/json.hpp"  // pre production
+// #include "../utils/nlohmann/json.hpp"  // pre production
 
 #include <string>
 #include <vector>
@@ -32,7 +32,7 @@ struct Card {
         int currentStep = 0;
         double easeFactor = 2.5;
         double interval = 0;
-        static const std::vector<double> learningStep;
+        const std::vector<double> learningStep = {1.0/1440, 10.0/1440, 15.0/1440};
         
         std::function<double(Grade)> mult = [this](Grade grade) {
             if (Grade::Hard == grade) return 1.2;
@@ -54,5 +54,3 @@ struct Card {
         void adjustEaseFactor(const Grade& grade);
         void adjustInterval();
 };
-
-const std::vector<double> Card::learningStep = {1.0/1440, 10.0/1440, 15.0/1440};

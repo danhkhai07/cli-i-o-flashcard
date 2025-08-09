@@ -55,7 +55,6 @@ void Card::review(const Grade& grade){
 }
 
 void Card::read(const nlohmann::json& cardView){
-    std::string tmp;
     front = cardView["front"].get<std::string>();
     back = cardView["back"].get<std::string>();
     lastRefresh = cardView["lastRefresh"].get<std::string>();
