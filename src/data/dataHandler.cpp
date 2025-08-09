@@ -114,7 +114,7 @@ bool Data::setExist(std::string_view setName){
 int Data::cardContentExist(std::string_view setName, std::string_view front){
     if (!setExist(setName)) return 0; 
     for (auto it = dataset[setName].begin(); it != dataset[setName].end(); ++it){
-        if ((*it)["front"] == front) {
+        if ((*it)["front"] == std::string(front)) {
             return static_cast<int>(std::distance(dataset[setName].begin(), it)) + 1;
         }
     }
@@ -123,7 +123,7 @@ int Data::cardContentExist(std::string_view setName, std::string_view front){
 
 int Data::cardIdxExist(std::string_view setName, const int idx){
     if (!setExist(setName)) return 0;
-    if (idx < 0 or idx >= setSize(setName)) return 0;
+    if (idx < 0 || idx >= setSize(setName)) return 0;
     return 1;
 }
 
@@ -136,10 +136,10 @@ bool Data::nameValid(std::string_view name){
     };
     bool disallowed = (std::find(DisallowedNames.begin(), DisallowedNames.end(), name) != DisallowedNames.end());
 
-    return !(containSpace or disallowed);
+    return !(containSpace || disallowed);
 }
 
 int Data::setSize(std::string_view setName){
     if (!setExist(setName)) return 0; 
-    return dataset[setName].size();
+    return static_cast<int>(dataset[setName].size());
 }

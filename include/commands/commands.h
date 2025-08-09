@@ -24,7 +24,7 @@ class Command {
 
         struct CommandNode {
             CommandNode(
-                    const int& n,
+                    int n,
                     const std::string& nm,
                     const std::string& key,
                     bool term,
