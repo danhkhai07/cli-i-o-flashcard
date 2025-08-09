@@ -40,7 +40,7 @@ std::pair<int, int> Command::lookUp(int pos, int argc, char* argv[], const int& 
 /// @param keyword 
 /// @param terminal 
 /// @param specExpected 
-void Command::addCommandNode(const std::string& keyword, const Specifier& specExpected){
+void Command::addCommandNode(std::string_view keyword, const Specifier& specExpected){
     int nodePos = nodeCount;
     CommandNode node(nodePos, keyword, keyword, false, specExpected, {});
     cmdTree.push_back(node);
@@ -52,7 +52,7 @@ void Command::addCommandNode(const std::string& keyword, const Specifier& specEx
 /// @param dependingNode 
 /// @param terminal 
 /// @param specExpected 
-void Command::addCommandNode(const std::string& keyword, const Specifier& specExpected, int dependingNode){
+void Command::addCommandNode(std::string_view keyword, const Specifier& specExpected, int dependingNode){
     int nodePos = nodeCount;
     CommandNode node(nodePos, cmdTree[dependingNode].name + "_" + keyword, keyword, false, specExpected, {});
     cmdTree.push_back(node);
@@ -66,7 +66,7 @@ void Command::addCommandNode(const std::string& keyword, const Specifier& specEx
 /// @param func 
 /// @param terminal 
 /// @param specExpected 
-void Command::addCommandNode(const std::string& keyword, const Specifier& specExpected, int dependingNode,
+void Command::addCommandNode(std::string_view keyword, const Specifier& specExpected, int dependingNode,
     std::function<std::pair<int, int>(int, char*[])> func){
     int nodePos = nodeCount;
     CommandNode node(nodePos, cmdTree[dependingNode].name + "_" + keyword, keyword, true, specExpected, func);

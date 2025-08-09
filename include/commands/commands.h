@@ -44,13 +44,13 @@ class Command {
 
         std::vector<CommandNode> cmdTree;
 
-    // OPERATING FUNCTIONS
-        void addCommandNode(const std::string& keyword, const Specifier& specExpected);
-        void addCommandNode(const std::string& keyword, const Specifier& specExpected, int dependingNode);
-        void addCommandNode(const std::string& keyword, const Specifier& specExpected, int dependingNode,
+        // OPERATING FUNCTIONS
+        void addCommandNode(std::string_view keyword, const Specifier& specExpected);
+        void addCommandNode(std::string_view keyword, const Specifier& specExpected, int dependingNode);
+        void addCommandNode(std::string_view keyword, const Specifier& specExpected, int dependingNode,
             std::function<std::pair<int, int>(int, char*[])> func);
 
-    // EXECUTING FUNCTIONS
+        // EXECUTING FUNCTIONS
         std::pair<int, int> Zeus(int argc, char* argv[]);
         std::pair<int, int> quiz_help(int argc, char* argv[]);
         std::pair<int, int> quiz_set(int argc, char* argv[]);
