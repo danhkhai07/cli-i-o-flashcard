@@ -7,31 +7,6 @@
 #include <unordered_map>
 
 class Command {
-    public:
-        Command(){
-            // Root
-            addCommandNode("root", Specifier::None); // 0
-            // 1st layer
-            addCommandNode("help", Specifier::None, 0, Zeus); // 1
-            addCommandNode("set", Specifier::Set, 0, Zeus); // 2
-            addCommandNode("learn", Specifier::Set, 0, Zeus); // 3
-            addCommandNode("about", Specifier::None, 0, Zeus); // 4
-            // 2nd layer
-            addCommandNode("$set", Specifier::None, 2); // 5
-            addCommandNode("$set", Specifier::None, 3, Zeus); // 6
-            // 3rd layer
-            addCommandNode("new", Specifier::None, 5, Zeus); // 7
-            addCommandNode("kill", Specifier::None, 5, Zeus); // 8
-            addCommandNode("delete", Specifier::Item, 5); // 9
-            addCommandNode("rename", Specifier::None, 5, Zeus); // 10
-            addCommandNode("list", Specifier::None, 5, Zeus); // 11
-            addCommandNode("add", Specifier::None, 5, Zeus); // 12
-            addCommandNode("$item", Specifier::None, 9, Zeus); // 13
-        }
-        ~Command(){}
-
-        std::pair<int, int> Command::lookUp(int pos, int argc, char* argv[], const int& nodePos);
-        void errorHandling(int argc, char* argv[], int errorCode);
     private:
         Command(const Command&);
         Command& operator=(const Command&);
@@ -76,5 +51,31 @@ class Command {
             std::function<std::pair<int, int>(int, char*[])> func);
 
     // EXECUTING FUNCTIONS
-        static std::pair<int, int> Zeus(int argc, char* argv[]);
+        std::pair<int, int> Zeus(int argc, char* argv[]);
+
+    public:
+        Command(){
+            // Root
+            addCommandNode("root", Specifier::None); // 0
+            // 1st layer
+            addCommandNode("help", Specifier::None, 0, Zeus); // 1
+            addCommandNode("set", Specifier::Set, 0, Zeus); // 2
+            addCommandNode("learn", Specifier::Set, 0, Zeus); // 3
+            addCommandNode("about", Specifier::None, 0, Zeus); // 4
+            // 2nd layer
+            addCommandNode("$set", Specifier::None, 2); // 5
+            addCommandNode("$set", Specifier::None, 3, Zeus); // 6
+            // 3rd layer
+            addCommandNode("new", Specifier::None, 5, Zeus); // 7
+            addCommandNode("kill", Specifier::None, 5, Zeus); // 8
+            addCommandNode("delete", Specifier::Item, 5); // 9
+            addCommandNode("rename", Specifier::None, 5, Zeus); // 10
+            addCommandNode("list", Specifier::None, 5, Zeus); // 11
+            addCommandNode("add", Specifier::None, 5, Zeus); // 12
+            addCommandNode("$item", Specifier::None, 9, Zeus); // 13
+        }
+        ~Command(){}
+
+        std::pair<int, int> Command::lookUp(int pos, int argc, char* argv[], const int& nodePos);
+        void errorHandling(int argc, char* argv[], int errorCode);
 };
