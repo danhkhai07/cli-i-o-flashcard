@@ -87,5 +87,4 @@ class Command {
         ~Command(){}
 
         std::pair<int, int> Command::lookUp(int pos, int argc, char* argv[], const int& nodePos);
-        void errorHandling(int argc, char* argv[], int errorCode);
 };
