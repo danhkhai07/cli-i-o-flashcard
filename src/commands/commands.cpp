@@ -42,7 +42,7 @@ std::pair<int, int> Command::lookUp(int pos, int argc, char* argv[], const int n
 /// @param specExpected 
 int Command::addCommandNode(std::string_view keyword, const Specifier& specExpected){
     int nodePos = nodeCount;
-    CommandNode node(nodePos, std::string(keyword), std::string(keyword), false, specExpected, {});
+    CommandNode node(nodePos, std::string(keyword), std::string(keyword), false, specExpected, nullptr);
     cmdTree.push_back(node);
     nodeCount++;
     return nodePos;
