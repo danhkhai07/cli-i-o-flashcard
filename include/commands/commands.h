@@ -45,13 +45,13 @@ class Command {
         std::vector<CommandNode> cmdTree;
 
         // OPERATING FUNCTIONS
-        void addCommandNode(std::string_view keyword, const Specifier& specExpected);
-        void addCommandNode(std::string_view keyword, const Specifier& specExpected, int dependingNode);
-        void addCommandNode(std::string_view keyword, const Specifier& specExpected, int dependingNode,
+        int addCommandNode(std::string_view keyword, const Specifier& specExpected);
+        int addCommandNode(std::string_view keyword, const Specifier& specExpected, int dependingNode);
+        int addCommandNode(std::string_view keyword, const Specifier& specExpected, int dependingNode,
             std::function<std::pair<int, int>(int, char*[])> func);
 
         // EXECUTING FUNCTIONS
-        std::pair<int, int> Zeus(int argc, char* argv[]);
+        static std::pair<int, int> Zeus(int argc, char* argv[]);
         std::pair<int, int> quiz_help(int argc, char* argv[]);
         std::pair<int, int> quiz_set(int argc, char* argv[]);
         std::pair<int, int> quiz_learn(int argc, char* argv[]);
@@ -66,25 +66,26 @@ class Command {
     public:
         Command(){
             // Root
-            addCommandNode("root", Specifier::None); // 0
+            int Nroot = addCommandNode("root", Specifier::None);
             // 1st layer
-            addCommandNode("help", Specifier::None, 0, Zeus); // 1
-            addCommandNode("set", Specifier::Set, 0, Zeus); // 2
-            addCommandNode("learn", Specifier::Set, 0, Zeus); // 3
-            addCommandNode("about", Specifier::None, 0, Zeus); // 4
+            int Nroot_help     = addCommandNode("help", Specifier::None, Nroot, Zeus);
+            int Nroot_set      = addCommandNode("set", Specifier::Set, Nroot, Zeus);
+            int Nroot_learn    = addCommandNode("learn", Specifier::Set, Nroot, Zeus);
+            int Nroot_about    = addCommandNode("about", Specifier::None, Nroot, Zeus);
             // 2nd layer
-            addCommandNode("$set", Specifier::None, 2); // 5
-            addCommandNode("$set", Specifier::None, 3, Zeus); // 6
+            int Nroot_set_$set     = addCommandNode("$set", Specifier::None, Nroot_set);
+            int Nroot_learn_$set   = addCommandNode("$set", Specifier::None, Nroot_set, Zeus);
             // 3rd layer
-            addCommandNode("new", Specifier::None, 5, Zeus); // 7
-            addCommandNode("kill", Specifier::None, 5, Zeus); // 8
-            addCommandNode("delete", Specifier::Item, 5); // 9
-            addCommandNode("rename", Specifier::None, 5, Zeus); // 10
-            addCommandNode("list", Specifier::None, 5, Zeus); // 11
-            addCommandNode("add", Specifier::None, 5, Zeus); // 12
-            addCommandNode("$item", Specifier::None, 9, Zeus); // 13
+            int Nroot_set_$set_new     = addCommandNode("new", Specifier::None, Nroot_set_$set, Zeus);
+            int Nroot_set_$set_kill    = addCommandNode("kill", Specifier::None, Nroot_set_$set, Zeus); 
+            int Nroot_set_$set_delete  = addCommandNode("delete", Specifier::Item, Nroot_set_$set); 
+            int Nroot_set_$set_rename  = addCommandNode("rename", Specifier::None, Nroot_set_$set, Zeus); 
+            int Nroot_set_$set_list    = addCommandNode("list", Specifier::None, Nroot_set_$set, Zeus);
+            int Nroot_set_$set_add     = addCommandNode("add", Specifier::None, Nroot_set_$set, Zeus); 
+            // 4th layer
+            int Nroot_set_$set_delete_$item    = addCommandNode("$item", Specifier::None, Nroot_set_$set_delete, Zeus); 
         }
         ~Command(){}
 
-        std::pair<int, int> Command::lookUp(int pos, int argc, char* argv[], const int& nodePos);
+        std::pair<int, int> Command::lookUp(int pos, int argc, char* argv[], const int nodePos);
 };

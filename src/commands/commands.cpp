@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-std::pair<int, int> Command::lookUp(int pos, int argc, char* argv[], const int& nodePos){
+std::pair<int, int> Command::lookUp(int pos, int argc, char* argv[], const int nodePos){
     CommandNode node = cmdTree[nodePos];
     if (argc - pos < 2){
         if (!node.terminal) return {2,pos};
@@ -40,11 +40,12 @@ std::pair<int, int> Command::lookUp(int pos, int argc, char* argv[], const int& 
 /// @param keyword 
 /// @param terminal 
 /// @param specExpected 
-void Command::addCommandNode(std::string_view keyword, const Specifier& specExpected){
+int Command::addCommandNode(std::string_view keyword, const Specifier& specExpected){
     int nodePos = nodeCount;
     CommandNode node(nodePos, std::string(keyword), std::string(keyword), false, specExpected, {});
     cmdTree.push_back(node);
     nodeCount++;
+    return nodePos;
 }
 
 /// @brief Add new command node
@@ -52,12 +53,13 @@ void Command::addCommandNode(std::string_view keyword, const Specifier& specExpe
 /// @param dependingNode 
 /// @param terminal 
 /// @param specExpected 
-void Command::addCommandNode(std::string_view keyword, const Specifier& specExpected, int dependingNode){
+int Command::addCommandNode(std::string_view keyword, const Specifier& specExpected, int dependingNode){
     int nodePos = nodeCount;
     CommandNode node(nodePos, cmdTree[dependingNode].name + "_" + std::string(keyword), std::string(keyword), false, specExpected, nullptr);
     cmdTree.push_back(node);
     cmdTree[dependingNode].subordinates[std::string(keyword)] = nodePos;
     nodeCount++;
+    return nodePos;
 }
 
 /// @brief Add new command node
@@ -66,13 +68,14 @@ void Command::addCommandNode(std::string_view keyword, const Specifier& specExpe
 /// @param func 
 /// @param terminal 
 /// @param specExpected 
-void Command::addCommandNode(std::string_view keyword, const Specifier& specExpected, int dependingNode,
+int Command::addCommandNode(std::string_view keyword, const Specifier& specExpected, int dependingNode,
     std::function<std::pair<int, int>(int, char*[])> func){
     int nodePos = nodeCount;
     CommandNode node(nodePos, cmdTree[dependingNode].name + "_" + std::string(keyword), std::string(keyword), true, specExpected, func);
     cmdTree.push_back(node);
     cmdTree[dependingNode].subordinates[std::string(keyword)] = nodePos;
     nodeCount++;
+    return nodePos;
 }
 
 // EXECUTING FUNCTIONS
