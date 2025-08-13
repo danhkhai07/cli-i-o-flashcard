@@ -3,6 +3,7 @@
 #include <iostream>
 
 std::pair<int, int> Command::lookUp(int pos, int argc, char* argv[], const int nodePos){
+    std::cout << nodePos << '\n';
     CommandNode node = cmdTree[nodePos];
     if (argc - pos < 2){
         if (!node.terminal) return {2,pos};
@@ -43,6 +44,15 @@ std::pair<int, int> Command::lookUp(int pos, int argc, char* argv[], const int n
 int Command::addCommandNode(std::string_view keyword, const Specifier& specExpected){
     int nodePos = nodeCount;
     CommandNode node(nodePos, std::string(keyword), std::string(keyword), false, specExpected, nullptr);
+    cmdTree.push_back(node);
+    nodeCount++;
+    return nodePos;
+}
+
+int Command::addCommandNode(std::string_view keyword, const Specifier& specExpected, 
+    std::function<std::pair<int, int>(int, char*[])> func){
+    int nodePos = nodeCount;
+    CommandNode node(nodePos, std::string(keyword), std::string(keyword), true, specExpected, func);
     cmdTree.push_back(node);
     nodeCount++;
     return nodePos;
