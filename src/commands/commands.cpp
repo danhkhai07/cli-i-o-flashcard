@@ -88,8 +88,26 @@ int Command::addCommandNode(std::string_view keyword, const Specifier& specExpec
     return nodePos;
 }
 
+void Command::addSubordinate(const int sub, const int dependingNode){
+    cmdTree[dependingNode].subordinates[std::string(cmdTree[sub].keyword)] = sub;
+    return;
+}
+
 // EXECUTING FUNCTIONS
 std::pair<int, int> Command::Zeus(int argc, char* argv[]){
     std::cout<< "ALL RETURN TO ME!";
     return {0, 0};
 }
+
+std::pair<int, int> Command::quiz_help(int argc, char* argv[]){
+
+}
+
+// std::pair<int, int> Command::quiz_about(int argc, char* argv[]);
+// std::pair<int, int> Command::quiz_new(int argc, char* argv[]);
+// std::pair<int, int> Command::quiz_learn(int argc, char* argv[]);
+// std::pair<int, int> Command::quiz_delete(int argc, char* argv[]);
+// std::pair<int, int> Command::quiz_rename(int argc, char* argv[]);
+// std::pair<int, int> Command::quiz_set(int argc, char* argv[]);
+// std::pair<int, int> Command::quiz_set_$set(int argc, char* argv[]);
+// std::pair<int, int> Command::quiz_set_$set_item_$item(int argc, char* argv[]);

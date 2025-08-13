@@ -6,8 +6,8 @@ add_library(Card SHARED ./data/card.cpp)
 # Define export DLL symbols
 target_compile_definitions(CLI PRIVATE CLI_EXPORT_DLL)
 target_compile_definitions(Commands PRIVATE COMMANDS_EXPORT_DLL)
-target_compile_definitions(DATAHANDLER PRIVATE DATAHANDLER_EXPORT_DLL)
-target_compile_definitions(CARd PRIVATE CARD_EXPORT_DLL)
+target_compile_definitions(DataHandler PRIVATE DATAHANDLER_EXPORT_DLL)
+target_compile_definitions(Card PRIVATE CARD_EXPORT_DLL)
 
 # Add include directories
 target_include_directories(CLI PRIVATE ${CMAKE_SOURCE_DIR}/include)
