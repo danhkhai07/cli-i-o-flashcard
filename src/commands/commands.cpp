@@ -17,6 +17,10 @@ std::pair<int, int> Command::lookUp(int pos, int argc, char* argv[], const int n
                 setName = argv[pos + 1]; 
                 it = node.subordinates.find("$set");
                 break;
+             case Specifier::NewSetName:
+                newSetName = argv[pos + 1]; 
+                it = node.subordinates.find("$newSetName");
+                break;
             case Specifier::Item:
                 try { itemPos = std::stoi(argv[pos + 1]); }
                 catch (std::logic_error) { return {1, pos + 1}; }
@@ -107,10 +111,60 @@ std::pair<int, int> Command::quiz_about(int argc, char* argv[]){
     std::cout << "Check out the whole repo at: https://github.com/danhkhai07/cli-io-flashcard\n";
     return {0,0};
 }
-// std::pair<int, int> Command::quiz_new(int argc, char* argv[]);
-// std::pair<int, int> Command::quiz_learn(int argc, char* argv[]);
-// std::pair<int, int> Command::quiz_delete(int argc, char* argv[]);
-// std::pair<int, int> Command::quiz_rename(int argc, char* argv[]);
-// std::pair<int, int> Command::quiz_set(int argc, char* argv[]);
-// std::pair<int, int> Command::quiz_set_$set(int argc, char* argv[]);
-// std::pair<int, int> Command::quiz_set_$set_item_$item(int argc, char* argv[]);
+
+std::pair<int, int> Command::quiz_new_set_$set(int argc, char* argv[]){
+    std::cout << "Reached.\n";
+    return {0,0};
+}
+
+std::pair<int, int> Command::quiz_new_set_$set_item_$item(int argc, char* argv[]){
+    std::cout << "Reached.\n";
+    return {0,0};
+}
+
+std::pair<int, int> Command::quiz_learn_set_$set(int argc, char* argv[]){
+    std::cout << "Reached.\n";
+    return {0,0};
+}
+
+std::pair<int, int> Command::quiz_learn_set_$set_item_$item(int argc, char* argv[]){
+    std::cout << "Reached.\n";
+    return {0,0};
+
+}
+
+std::pair<int, int> Command::quiz_delete_set_$set(int argc, char* argv[]){
+    std::cout << "Reached.\n";
+    return {0,0};
+
+}
+
+std::pair<int, int> Command::quiz_delete_set_$set_item_$item(int argc, char* argv[]){
+    std::cout << "Reached.\n";
+    return {0,0};
+
+}
+
+std::pair<int, int> Command::quiz_rename_set_$set_$newSetName(int argc, char* argv[]){
+    std::cout << "Reached.\n";
+    return {0,0};
+    
+}
+
+std::pair<int, int> Command::quiz_set(int argc, char* argv[]){
+    std::cout << "Reached.\n";
+    return {0,0};
+
+}
+
+std::pair<int, int> Command::quiz_set_$set(int argc, char* argv[]){
+    std::cout << "Reached.\n";
+    return {0,0};
+
+}
+
+std::pair<int, int> Command::quiz_set_$set_item_$item(int argc, char* argv[]){
+    std::cout << "Reached.\n";
+    return {0,0};
+
+}

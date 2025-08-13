@@ -25,7 +25,7 @@ class COMMANDS_SHARED Command {
 
         int nodeCount = 0;
         enum Specifier {
-            None = 0, Set = 1, Item = 2
+            None = 0, Set = 1, Item = 2, NewSetName = 3
         };
 
         struct CommandNode {
@@ -64,46 +64,86 @@ class COMMANDS_SHARED Command {
         std::pair<int, int> Zeus(int argc, char* argv[]);
         std::pair<int, int> quiz_help(int argc, char* argv[]);
         std::pair<int, int> quiz_about(int argc, char* argv[]);
-        std::pair<int, int> quiz_new(int argc, char* argv[]);
-        std::pair<int, int> quiz_learn(int argc, char* argv[]);
-        std::pair<int, int> quiz_delete(int argc, char* argv[]);
-        std::pair<int, int> quiz_rename(int argc, char* argv[]);
+        std::pair<int, int> quiz_new_set_$set(int argc, char* argv[]);
+        std::pair<int, int> quiz_new_set_$set_item_$item(int argc, char* argv[]);
+        std::pair<int, int> quiz_learn_set_$set(int argc, char* argv[]);
+        std::pair<int, int> quiz_learn_set_$set_item_$item(int argc, char* argv[]);
+        std::pair<int, int> quiz_delete_set_$set(int argc, char* argv[]);
+        std::pair<int, int> quiz_delete_set_$set_item_$item(int argc, char* argv[]);
+        std::pair<int, int> quiz_rename_set_$set_$newSetName(int argc, char* argv[]);
         std::pair<int, int> quiz_set(int argc, char* argv[]);
         std::pair<int, int> quiz_set_$set(int argc, char* argv[]);
         std::pair<int, int> quiz_set_$set_item_$item(int argc, char* argv[]);
     public:
         Command(){
             // Root
-            int Nroot = addCommandNode("root", Specifier::None);
+            int root = addCommandNode("root", Specifier::None);
+            
             // 1st layer
-            int Nroot_help      = addCommandNode("help", Specifier::None, Nroot,
-                [this](int argc, char* argv[]) { return Zeus(argc, argv); });
-            int Nroot_about     = addCommandNode("about", Specifier::None, Nroot,
-                [this](int argc, char* argv[]) { return Zeus(argc, argv); });
-            int Nroot_new       = addCommandNode("new", Specifier::None, Nroot,
-                [this](int argc, char* argv[]) { return Zeus(argc, argv); });
-            int Nroot_learn     = addCommandNode("learn", Specifier::None, Nroot, 
-                [this](int argc, char* argv[]) { return Zeus(argc, argv); });
-            int Nroot_delete    = addCommandNode("delete", Specifier::None, Nroot, 
-                [this](int argc, char* argv[]) { return Zeus(argc, argv); });
-            int Nroot_rename    = addCommandNode("rename", Specifier::None, Nroot, 
-                [this](int argc, char* argv[]) { return Zeus(argc, argv); });
+            int root_help      = addCommandNode("help", Specifier::None, root,
+                [this](int argc, char* argv[]) { return quiz_help(argc, argv); });
+            int root_about     = addCommandNode("about", Specifier::None, root,
+                [this](int argc, char* argv[]) { return quiz_about(argc, argv); });
+            int root_new       = addCommandNode("new", Specifier::None, root);
+            int root_learn     = addCommandNode("learn", Specifier::None, root);
+            int root_delete    = addCommandNode("delete", Specifier::None, root);
+            int root_rename    = addCommandNode("rename", Specifier::None, root);
+            int root_set   = addCommandNode("--set", Specifier::Set, root, 
+                [this](int argc, char* argv[]) { return quiz_set(argc, argv); });
+            int root_s     = addCommandNode("-s", Specifier::Set, root,
+                [this](int argc, char* argv[]) { return quiz_set(argc, argv); });
+
             // 2nd layer
-            int Nroot_set   = addCommandNode("--set", Specifier::Set, Nroot, 
-                [this](int argc, char* argv[]) { return Zeus(argc, argv); });
-            int Nroot_s     = addCommandNode("-s", Specifier::Set, 
-                [this](int argc, char* argv[]) { return Zeus(argc, argv); });
+            int root_set_$set  = addCommandNode("$set", Specifier::None, root_set, 
+                [this](int argc, char* argv[]) { return quiz_set_$set(argc, argv); });
+                addSubordinate(root_set_$set, root_s);
+            int root_new_set   = addCommandNode("--set", Specifier::Set, root_new);
+            int root_new_s     = addCommandNode("-s", Specifier::Set, root_new);
+            int root_learn_set = addCommandNode("--set", Specifier::Set, root_learn);
+            int root_learn_s   = addCommandNode("-s", Specifier::Set, root_learn);
+            int root_delete_set = addCommandNode("--set", Specifier::Set, root_delete);
+            int root_delete_s   = addCommandNode("-s", Specifier::Set, root_delete);
+            int root_rename_set = addCommandNode("--set", Specifier::Set, root_rename);
+            int root_rename_s   = addCommandNode("-s", Specifier::Set, root_rename);
+            
             // 3rd layer
-            int Nroot_set_$set      = addCommandNode("$set", Specifier::None, Nroot_set, 
-                [this](int argc, char* argv[]) { return Zeus(argc, argv); });
-            addSubordinate(Nroot_set_$set, Nroot_s);
+            int root_set_$set_item = addCommandNode("--item", Specifier::Item, root_set_$set);
+            int root_set_$set_i    = addCommandNode("-i", Specifier::Item, root_set_$set);
+            int root_new_set_$set  = addCommandNode("$set", Specifier::None, root_new_set, 
+                [this](int argc, char* argv[]) { return quiz_new_set_$set(argc, argv); });
+                addSubordinate(root_new_set_$set, root_new_s);
+            int root_learn_set_$set  = addCommandNode("$set", Specifier::None, root_learn_set, 
+                [this](int argc, char* argv[]) { return quiz_learn_set_$set(argc, argv); });
+                addSubordinate(root_learn_set_$set, root_learn_s);
+            int root_delete_set_$set  = addCommandNode("$set", Specifier::None, root_delete_set, 
+                [this](int argc, char* argv[]) { return quiz_delete_set_$set(argc, argv); });
+                addSubordinate(root_delete_set_$set, root_delete_s);
+            int root_rename_set_$set  = addCommandNode("$set", Specifier::NewSetName, root_rename_set);
+                addSubordinate(root_rename_set_$set, root_rename_s);
+
             // 4th layer
-            int Nroot_set_$set_item = addCommandNode("--item", Specifier::Item, Nroot);
-            int Nroot_set_$set_i    = addCommandNode("-i", Specifier::Item, Nroot_set_$set);
+            int root_set_$set_item_$item = addCommandNode("$item", Specifier::None, root_set_$set_item, 
+                [this](int argc, char* argv[]) { return quiz_set_$set_item_$item(argc, argv); });
+                addSubordinate(root_set_$set_item_$item, root_set_$set_i);
+            int root_new_set_$set_item = addCommandNode("--item", Specifier::Item, root_new_set_$set);
+            int root_new_set_$set_i    = addCommandNode("-i", Specifier::Item, root_new_set_$set);
+            int root_learn_set_$set_item = addCommandNode("--item", Specifier::Item, root_learn_set_$set);
+            int root_learn_set_$set_i    = addCommandNode("-i", Specifier::Item, root_learn_set_$set);
+            int root_delete_set_$set_item = addCommandNode("--item", Specifier::Item, root_delete_set_$set);
+            int root_delete_set_$set_i    = addCommandNode("-i", Specifier::Item, root_delete_set_$set);
+            int root_rename_set_$set_$newSetName = addCommandNode("$newSetName", Specifier::None, root_rename_set_$set,
+                [this](int argc, char* argv[]) { return quiz_rename_set_$set_$newSetName(argc, argv); });
+
             // 5th layer
-            int Nroot_set_$set_item_$item = addCommandNode("$item", Specifier::None, Nroot_set_$set_item, 
-                [this](int argc, char* argv[]) { return Zeus(argc, argv); });
-            addSubordinate(Nroot_set_$set_item_$item, Nroot_set_$set_i);
+            int root_new_set_$set_item_$item = addCommandNode("$item", Specifier::None, root_new_set_$set_item,
+                [this](int argc, char* argv[]) { return quiz_new_set_$set_item_$item(argc, argv); });
+                addSubordinate(root_new_set_$set_item_$item, root_new_set_$set_i);
+            int root_learn_set_$set_item_$item = addCommandNode("$item", Specifier::None, root_learn_set_$set_item,
+                [this](int argc, char* argv[]) { return quiz_learn_set_$set_item_$item(argc, argv); });
+                addSubordinate(root_learn_set_$set_item_$item, root_learn_set_$set_i);
+            int root_delete_set_$set_item_$item = addCommandNode("$item", Specifier::None, root_delete_set_$set_item,
+                [this](int argc, char* argv[]) { return quiz_delete_set_$set_item_$item(argc, argv); });
+                addSubordinate(root_delete_set_$set_item_$item, root_delete_set_$set_i);
                 
         }
         ~Command(){}
