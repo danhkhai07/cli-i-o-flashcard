@@ -31,3 +31,7 @@ install(TARGETS quiz
 install(DIRECTORY include
     DESTINATION .
 )
+
+install (DIRECTORY data
+    DESTINATION .
+)
