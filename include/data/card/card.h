@@ -47,34 +47,34 @@ public:
     }
 
     /// Front text of the card.
-    CARD_SHARED std::string front;
+    std::string front;
 
     /// Back text of the card.
-    CARD_SHARED std::string back;
+    std::string back;
 
     /// Time intervals for each possible grade.
-    CARD_SHARED std::unordered_map<Grade, double> gradeTimeIntervals;
+    std::unordered_map<Grade, double> gradeTimeIntervals;
 
     /// Last refresh time as a string (format: "%F %T").
-    CARD_SHARED std::string lastRefresh;
+    std::string lastRefresh;
 
     /**
      * @brief Reviews the card given a grade and updates scheduling data.
      * @param grade The user-assigned grade.
      */
-    CARD_SHARED void review(const Grade& grade);
+    void review(const Grade& grade);
 
     /**
      * @brief Reads card data from a JSON object.
      * @param cardView JSON object containing card fields.
      */
-    CARD_SHARED void read(const nlohmann::json& cardView);
+    void read(const nlohmann::json& cardView);
 
     /**
      * @brief Checks if the card is due for review.
      * @return true if due, false otherwise.
      */
-    CARD_SHARED bool due();
+    bool due();
 
 private:
     /// Current state of the card.
@@ -93,7 +93,7 @@ private:
     inline static const std::vector<double> learningStep = {1.0/1440, 10.0/1440, 15.0/1440};
     
     /// Interval multiplier based on grade.
-    CARD_SHARED const std::function<double(Grade)> mult = [this](Grade grade) {
+    const std::function<double(Grade)> mult = [this](Grade grade) {
         if (Grade::Hard == grade) return 1.2;
         if (Grade::Good == grade) return easeFactor;
         return easeFactor * 1.3; // Grade::Easy == grade

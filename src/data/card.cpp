@@ -8,17 +8,6 @@
 #include <iostream>
 #include <iomanip>
 
-const std::unordered_map<Grade, int> Card::presetLearnStep = {
-    {Grade::Again, 0},
-    {Grade::Hard, 1},
-    {Grade::Good, 2}
-};
-
-const std::unordered_map<Grade, int> Card::presetLapseStep = {
-    {Grade::Again, 1},
-    {Grade::Hard, 2}
-};
-
 Grade inputToGrade(std::string_view input) {
     static std::unordered_map<std::string, Grade> gradeMap = {
         { "Again", Grade::Again }, { "Hard", Grade::Hard }, { "Good", Grade::Good }, { "Easy", Grade::Easy }
