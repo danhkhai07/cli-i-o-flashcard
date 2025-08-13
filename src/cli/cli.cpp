@@ -1,6 +1,6 @@
 #include "cli/cli.h"
 #include "commands/commands.h"
-#include "data/dataHandler.h"
+#include "data/dataHandler/dataHandler.h"
 
 #include <iostream>
 #include <utility>
