@@ -4,7 +4,7 @@
 #include <algorithm>
 
 int Data::load(){
-    std::ifstream in("questions.json", std::ios::in);
+    std::ifstream in(targetPath, std::ios::in);
     if (!in) {
         dataset = nlohmann::json::object();
         return 0;
@@ -18,7 +18,7 @@ int Data::load(){
 }
 
 int Data::save(){
-    std::ofstream out("questions.json", std::ios::out | std::ios::trunc);
+    std::ofstream out(targetPath, std::ios::out | std::ios::trunc);
     out << dataset.dump(4);
     if (!out) return 0;
     return 1;

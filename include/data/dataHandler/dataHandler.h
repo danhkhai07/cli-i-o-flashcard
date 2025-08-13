@@ -9,6 +9,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 #include <memory>
 
 /*
@@ -24,6 +25,8 @@
 class DATAHANDLER_SHARED Data {
 private:
     nlohmann::json dataset;
+    std::filesystem::path exePath = std::filesystem::current_path(); // Or get executable path
+    std::filesystem::path targetPath = exePath / "../data/questions.json";
 
     /**
      * @brief Loads the dataset from questions.json.
