@@ -13,12 +13,12 @@
 /**
  * @brief Possible user grades when reviewing a card.
  */
-enum class CARD_SHARED Grade {Again, Hard, Good, Easy};
+enum class Grade {Again, Hard, Good, Easy};
 
 /**
  * @brief State of the card in the spaced repetition process.
  */
-enum class CARD_SHARED CardState {New, Learn, Review, Lapse};
+enum class CardState {New, Learn, Review, Lapse};
 
 /**
  * @brief Converts a string representation of grade to Grade enum.
@@ -47,34 +47,34 @@ public:
     }
 
     /// Front text of the card.
-    std::string front;
+    CARD_SHARED std::string front;
 
     /// Back text of the card.
-    std::string back;
+    CARD_SHARED std::string back;
 
     /// Time intervals for each possible grade.
-    std::unordered_map<Grade, double> gradeTimeIntervals;
+    CARD_SHARED std::unordered_map<Grade, double> gradeTimeIntervals;
 
     /// Last refresh time as a string (format: "%F %T").
-    std::string lastRefresh;
+    CARD_SHARED std::string lastRefresh;
 
     /**
      * @brief Reviews the card given a grade and updates scheduling data.
      * @param grade The user-assigned grade.
      */
-    void review(const Grade& grade);
+    CARD_SHARED void review(const Grade& grade);
 
     /**
      * @brief Reads card data from a JSON object.
      * @param cardView JSON object containing card fields.
      */
-    void read(const nlohmann::json& cardView);
+    CARD_SHARED void read(const nlohmann::json& cardView);
 
     /**
      * @brief Checks if the card is due for review.
      * @return true if due, false otherwise.
      */
-    bool due();
+    CARD_SHARED bool due();
 
 private:
     /// Current state of the card.
@@ -90,23 +90,30 @@ private:
     double interval = 0;
 
     /// Predefined learning step intervals (in days, fractional for minutes).
-    const std::vector<double> learningStep = {1.0/1440, 10.0/1440, 15.0/1440};
+    inline static const std::vector<double> learningStep = {1.0/1440, 10.0/1440, 15.0/1440};
     
     /// Interval multiplier based on grade.
-    std::function<double(Grade)> mult = [this](Grade grade) {
+    CARD_SHARED const std::function<double(Grade)> mult = [this](Grade grade) {
         if (Grade::Hard == grade) return 1.2;
         if (Grade::Good == grade) return easeFactor;
         return easeFactor * 1.3; // Grade::Easy == grade
     };
 
     /// Mapping of grades to learning step indexes for learning state.
-    static const std::unordered_map<Grade, int> presetLearnStep;
+    inline static const std::unordered_map<Grade, int> presetLearnStep = {
+        {Grade::Again, 0},
+        {Grade::Hard, 1},
+        {Grade::Good, 2}
+    };
 
     /// Mapping of grades to learning step indexes for lapse state.
-    static const std::unordered_map<Grade, int> presetLapseStep;
+    inline static const std::unordered_map<Grade, int> presetLapseStep = {
+        {Grade::Again, 1},
+        {Grade::Hard, 2}
+    };
+
 
     // Handlers
-
     /**
      * @brief Handles review logic for learning/new states.
      * @param grade The grade assigned by the user.
