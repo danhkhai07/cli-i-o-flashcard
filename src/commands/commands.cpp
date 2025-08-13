@@ -3,7 +3,6 @@
 #include <iostream>
 
 std::pair<int, int> Command::lookUp(int pos, int argc, char* argv[], const int nodePos){
-    std::cout << nodePos << '\n';
     CommandNode node = cmdTree[nodePos];
     if (argc - pos < 2){
         if (!node.terminal) return {2,pos};
