@@ -1,6 +1,7 @@
 #pragma once
 
 #include "commands_export.h"
+#include "data/dataHandler/dataHandler.h"
 
 #include <functional>
 #include <string>
@@ -20,6 +21,8 @@ class COMMANDS_SHARED Command {
         std::string newSetName;
 
     // CORE VARIABLES & DEFINITIONS 
+        Data DataHandler;
+
         int nodeCount = 0;
         enum Specifier {
             None = 0, Set = 1, Item = 2
@@ -55,19 +58,19 @@ class COMMANDS_SHARED Command {
         int addCommandNode(std::string_view keyword, const Specifier& specExpected, int dependingNode,
             std::function<std::pair<int, int>(int, char*[])> func);
 
+        void addSubordinate(const int sub, const int dependingNode);
+
         // EXECUTING FUNCTIONS
         std::pair<int, int> Zeus(int argc, char* argv[]);
         std::pair<int, int> quiz_help(int argc, char* argv[]);
-        std::pair<int, int> quiz_set(int argc, char* argv[]);
-        std::pair<int, int> quiz_learn(int argc, char* argv[]);
         std::pair<int, int> quiz_about(int argc, char* argv[]);
-        std::pair<int, int> quiz_set_new(int argc, char* argv[]);
-        std::pair<int, int> quiz_set_rename(int argc, char* argv[]);
-        std::pair<int, int> quiz_set_kill(int argc, char* argv[]);
-        std::pair<int, int> quiz_set_list(int argc, char* argv[]);
-        std::pair<int, int> quiz_set_add(int argc, char* argv[]);
-        std::pair<int, int> quiz_set_delete(int argc, char* argv[]);
-
+        std::pair<int, int> quiz_new(int argc, char* argv[]);
+        std::pair<int, int> quiz_learn(int argc, char* argv[]);
+        std::pair<int, int> quiz_delete(int argc, char* argv[]);
+        std::pair<int, int> quiz_rename(int argc, char* argv[]);
+        std::pair<int, int> quiz_set(int argc, char* argv[]);
+        std::pair<int, int> quiz_set_$set(int argc, char* argv[]);
+        std::pair<int, int> quiz_set_$set_item_$item(int argc, char* argv[]);
     public:
         Command(){
             // Root
@@ -85,6 +88,23 @@ class COMMANDS_SHARED Command {
                 [this](int argc, char* argv[]) { return Zeus(argc, argv); });
             int Nroot_rename    = addCommandNode("rename", Specifier::None, Nroot, 
                 [this](int argc, char* argv[]) { return Zeus(argc, argv); });
+            // 2nd layer
+            int Nroot_set   = addCommandNode("--set", Specifier::Set, Nroot, 
+                [this](int argc, char* argv[]) { return Zeus(argc, argv); });
+            int Nroot_s     = addCommandNode("-s", Specifier::Set, 
+                [this](int argc, char* argv[]) { return Zeus(argc, argv); });
+            // 3rd layer
+            int Nroot_set_$set      = addCommandNode("$set", Specifier::None, Nroot_set, 
+                [this](int argc, char* argv[]) { return Zeus(argc, argv); });
+            addSubordinate(Nroot_set_$set, Nroot_s);
+            // 4th layer
+            int Nroot_set_$set_item = addCommandNode("--item", Specifier::Item, Nroot);
+            int Nroot_set_$set_i    = addCommandNode("-i", Specifier::Item, Nroot_set_$set);
+            // 5th layer
+            int Nroot_set_$set_item_$item = addCommandNode("$item", Specifier::None, Nroot_set_$set_item, 
+                [this](int argc, char* argv[]) { return Zeus(argc, argv); });
+            addSubordinate(Nroot_set_$set_item_$item, Nroot_set_$set_i);
+                
         }
         ~Command(){}
 

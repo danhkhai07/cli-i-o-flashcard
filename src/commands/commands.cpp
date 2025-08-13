@@ -100,10 +100,14 @@ std::pair<int, int> Command::Zeus(int argc, char* argv[]){
 }
 
 std::pair<int, int> Command::quiz_help(int argc, char* argv[]){
-
+    std::cout << "Call an ambulance!\n";
+    return {0,0};
 }
 
-// std::pair<int, int> Command::quiz_about(int argc, char* argv[]);
+std::pair<int, int> Command::quiz_about(int argc, char* argv[]){
+    std::cout << "Check out the whole repo at: https://github.com/danhkhai07/cli-io-flashcard\n";
+    return {0,0};
+}
 // std::pair<int, int> Command::quiz_new(int argc, char* argv[]);
 // std::pair<int, int> Command::quiz_learn(int argc, char* argv[]);
 // std::pair<int, int> Command::quiz_delete(int argc, char* argv[]);

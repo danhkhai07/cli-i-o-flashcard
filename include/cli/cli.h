@@ -14,7 +14,7 @@ class CLI_SHARED App{
         ~App(){};
 
         void run(int agrc, char* agrv[]);
-        void help(int argc, char* argv[], std::pair<int, int> errorOut);
+        void help(int argc, char* argv[], std::pair<int, int> exeResult);
 
     private:
         // Declaring (but not defining) to disallow copy constructor and operator=
