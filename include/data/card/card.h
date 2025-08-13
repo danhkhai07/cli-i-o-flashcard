@@ -1,5 +1,7 @@
 #pragma once
 
+#include "card_export.h"
+
 #include "utils/nlohmann/json.hpp"
 // #include "../utils/nlohmann/json.hpp"  // pre production
 
@@ -11,31 +13,31 @@
 /**
  * @brief Possible user grades when reviewing a card.
  */
-enum class Grade {Again, Hard, Good, Easy};
+enum class CARD_SHARED Grade {Again, Hard, Good, Easy};
 
 /**
  * @brief State of the card in the spaced repetition process.
  */
-enum class CardState {New, Learn, Review, Lapse};
+enum class CARD_SHARED CardState {New, Learn, Review, Lapse};
 
 /**
  * @brief Converts a string representation of grade to Grade enum.
  * @param input The grade string ("Again", "Hard", "Good", "Easy").
  * @return Corresponding Grade enum value.
  */
-Grade inputToGrade(std::string_view input);
+Grade CARD_SHARED inputToGrade(std::string_view input);
 
 /**
  * @brief Converts a string representation of state to CardState enum.
  * @param input The state string ("New", "Learn", "Review", "Lapse").
  * @return Corresponding CardState enum value.
  */
-CardState inputToState(std::string_view input);
+CardState CARD_SHARED inputToState(std::string_view input);
 
 /**
  * @brief Represents a single flashcard with spaced repetition metadata.
  */
-struct Card {
+struct CARD_SHARED Card {
 public:
     /**
      * @brief Constructs a card with default state and initializes grade intervals.

@@ -1,6 +1,8 @@
 #pragma once
 
-#include "data/card.h"
+#include "dataHandler_export.h"
+#include "data/card/card.h"
+
 #include "utils/date/date.h"
 #include "utils/nlohmann/json.hpp"
 
@@ -19,7 +21,7 @@
     5: card index doesn't exist (in a set)
 */
 
-class Data {
+class DATAHANDLER_SHARED Data {
 private:
     nlohmann::json dataset;
 
