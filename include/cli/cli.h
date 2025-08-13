@@ -1,11 +1,13 @@
 #pragma once
 
+#include "cli_export.h"
+
 #include <unordered_map>
 #include <string>
 #include <functional>
 
 
-class App{
+class CLI_SHARED App{
     public:
         // Default constructor and destructor
         App(){};

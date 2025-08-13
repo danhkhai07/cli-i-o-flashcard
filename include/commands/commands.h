@@ -1,12 +1,14 @@
 #pragma once
 
+#include "commands_export.h"
+
 #include <functional>
 #include <string>
 #include <utility>
 #include <vector>
 #include <unordered_map>
 
-class Command {
+class COMMANDS_SHARED Command {
     private:
         Command(const Command&);
         Command& operator=(const Command&);
