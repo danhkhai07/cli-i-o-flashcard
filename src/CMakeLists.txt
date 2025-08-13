@@ -1,7 +1,7 @@
-add_library(CLI STATIC ./cli/cli.cpp)
-add_library(Commands STATIC ./commands/commands.cpp)
-add_library(DataHandler STATIC ./data/dataHandler.cpp)
-add_library(Card STATIC ./data/card.cpp)
+add_library(CLI SHARED ./cli/cli.cpp)
+add_library(Commands SHARED ./commands/commands.cpp)
+add_library(DataHandler SHARED ./data/dataHandler.cpp)
+add_library(Card SHARED ./data/card.cpp)
 
 # Define export DLL symbols
 target_compile_definitions(CLI PRIVATE CLI_EXPORT_DLL)
