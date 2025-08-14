@@ -121,7 +121,7 @@ int Data::cardContentExist(std::string_view setName, std::string_view front){
     return -1;
 }
 
-int Data::cardIdxExist(std::string_view setName, const int idx){
+bool Data::cardIdxExist(std::string_view setName, const int idx){
     if (!setExist(setName)) return 0;
     if (idx < 0 || idx >= setSize(setName)) return 0;
     return 1;

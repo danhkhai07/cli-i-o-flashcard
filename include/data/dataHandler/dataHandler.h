@@ -12,20 +12,10 @@
 #include <filesystem>
 #include <memory>
 
-/*
-    Return code (int):
-    0: no error
-    1: invalid name
-    2: name already exists (if try to create new)
-    3: set doesn't exist (if try to access)
-    4: too many item in set
-    5: card index doesn't exist (in a set)
-*/
-
 class DATAHANDLER_SHARED Data {
 private:
     nlohmann::json dataset;
-    std::filesystem::path exePath = std::filesystem::current_path(); // Or get executable path
+    std::filesystem::path exePath = std::filesystem::current_path();
     std::filesystem::path targetPath = exePath / "../data/questions.json";
 
     /**
@@ -53,7 +43,7 @@ public:
     /**
      * @brief Creates a new set with the given name.
      * @param setName The name of the new set.
-     * @return 0 on success, 1 if the name is invalid, 2 if the set already exists.
+     * @return 0 on success, 6 if the name is invalid, 7 if the set already exists.
      */
     int newSet(std::string_view setName);
 
@@ -62,14 +52,14 @@ public:
      * @param setName The name of the set.
      * @param front The front text of the card.
      * @param back The back text of the card.
-     * @return 0 on success, 1 if set name is invalid, 3 if set doesn't exist, 4 if set is full.
+     * @return 0 on success, 6 if set name is invalid, 8 if set doesn't exist, 9 if set is full.
      */
     int addCard(std::string_view setName, std::string_view front, std::string_view back);
 
     /**
      * @brief Deletes the specified set.
      * @param setName The name of the set to delete.
-     * @return 0 on success, 3 if the set doesn't exist.
+     * @return 0 on success, 8 if the set doesn't exist.
      */
     int killSet(std::string_view setName);
 
@@ -77,7 +67,7 @@ public:
      * @brief Deletes a card at the given position in the set.
      * @param setName The name of the set.
      * @param cardPos The index of the card to delete.
-     * @return 0 on success, 3 if set doesn't exist, 5 if card index is invalid.
+     * @return 0 on success, 8 if set doesn't exist, 10 if card index is invalid.
      */
     int deleteCard(std::string_view setName, const int cardPos);
 
@@ -85,7 +75,7 @@ public:
      * @brief Renames a set.
      * @param setName The current name of the set.
      * @param newName The new name for the set.
-     * @return 0 on success, 3 if set doesn't exist, 1 if new name is invalid.
+     * @return 0 on success, 8 if set doesn't exist, 6 if new name is invalid.
      */
     int renameSet(std::string_view setName, std::string_view newName);
 
@@ -107,7 +97,7 @@ public:
      * @brief Lists all cards in the specified set.
      * @param[out] out Reference to a vector that will be filled with card JSON objects.
      * @param setName The name of the set to list cards from.
-     * @return 0 on success, 3 if set doesn't exist.
+     * @return 0 on success, 8 if set doesn't exist.
      */
     int listCards(std::vector<nlohmann::json>& out, std::string_view setName);
 
@@ -130,9 +120,9 @@ public:
      * @brief Checks if a card index exists in the set.
      * @param setName The name of the set.
      * @param idx The index to check.
-     * @return 1 if valid, 0 otherwise.
+     * @return true if valid, false otherwise.
      */
-    int cardIdxExist(std::string_view setName, const int idx);
+    bool cardIdxExist(std::string_view setName, const int idx);
 
     /**
      * @brief Checks if a name is valid (no spaces, not disallowed).
