@@ -130,9 +130,9 @@ int Data::cardIdxExist(std::string_view setName, const int idx){
 bool Data::nameValid(std::string_view name){
     bool containSpace = (name.find(' ') != std::string_view::npos);
     
-    static std::vector<std::string> DisallowedNames = {
+    static const std::vector<std::string> DisallowedNames = {
         "help", "set", "quiz", "learn", "about", "new", "kill", "rename", "list", "add", "delete",
-        "$set", "$item"
+        "$set", "$item", "$newSetName", "--set", "-s", "-i", "--item"
     };
     bool disallowed = (std::find(DisallowedNames.begin(), DisallowedNames.end(), name) != DisallowedNames.end());
 
