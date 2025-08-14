@@ -25,7 +25,7 @@ class COMMANDS_SHARED Command {
 
         int nodeCount = 0;
         enum Specifier {
-            None = 0, Set = 1, Item = 2, NewSetName = 3
+            None, Set, Item, NewSetName, Other
         };
 
         struct CommandNode {
@@ -65,7 +65,7 @@ class COMMANDS_SHARED Command {
         std::pair<int, int> quiz_help(int argc, char* argv[]);
         std::pair<int, int> quiz_about(int argc, char* argv[]);
         std::pair<int, int> quiz_new_set_$set(int argc, char* argv[]);
-        std::pair<int, int> quiz_new_set_$set_item_$item(int argc, char* argv[]);
+        std::pair<int, int> quiz_new_set_$set_item(int argc, char* argv[]);
         std::pair<int, int> quiz_learn_set_$set(int argc, char* argv[]);
         std::pair<int, int> quiz_learn_set_$set_item_$item(int argc, char* argv[]);
         std::pair<int, int> quiz_delete_set_$set(int argc, char* argv[]);
@@ -109,7 +109,7 @@ class COMMANDS_SHARED Command {
             // 3rd layer
             int root_set_$set_item = addCommandNode("--item", Specifier::Item, root_set_$set);
             int root_set_$set_i    = addCommandNode("-i", Specifier::Item, root_set_$set);
-            int root_new_set_$set  = addCommandNode("$set", Specifier::None, root_new_set, 
+            int root_new_set_$set  = addCommandNode("$set", Specifier::Other, root_new_set, 
                 [this](int argc, char* argv[]) { return quiz_new_set_$set(argc, argv); });
                 addSubordinate(root_new_set_$set, root_new_s);
             int root_learn_set_$set  = addCommandNode("$set", Specifier::None, root_learn_set, 
@@ -125,8 +125,6 @@ class COMMANDS_SHARED Command {
             int root_set_$set_item_$item = addCommandNode("$item", Specifier::None, root_set_$set_item, 
                 [this](int argc, char* argv[]) { return quiz_set_$set_item_$item(argc, argv); });
                 addSubordinate(root_set_$set_item_$item, root_set_$set_i);
-            int root_new_set_$set_item = addCommandNode("--item", Specifier::Item, root_new_set_$set);
-            int root_new_set_$set_i    = addCommandNode("-i", Specifier::Item, root_new_set_$set);
             int root_learn_set_$set_item = addCommandNode("--item", Specifier::Item, root_learn_set_$set);
             int root_learn_set_$set_i    = addCommandNode("-i", Specifier::Item, root_learn_set_$set);
             int root_delete_set_$set_item = addCommandNode("--item", Specifier::Item, root_delete_set_$set);
@@ -135,9 +133,6 @@ class COMMANDS_SHARED Command {
                 [this](int argc, char* argv[]) { return quiz_rename_set_$set_$newSetName(argc, argv); });
 
             // 5th layer
-            int root_new_set_$set_item_$item = addCommandNode("$item", Specifier::None, root_new_set_$set_item,
-                [this](int argc, char* argv[]) { return quiz_new_set_$set_item_$item(argc, argv); });
-                addSubordinate(root_new_set_$set_item_$item, root_new_set_$set_i);
             int root_learn_set_$set_item_$item = addCommandNode("$item", Specifier::None, root_learn_set_$set_item,
                 [this](int argc, char* argv[]) { return quiz_learn_set_$set_item_$item(argc, argv); });
                 addSubordinate(root_learn_set_$set_item_$item, root_learn_set_$set_i);
