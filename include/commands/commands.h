@@ -9,6 +9,17 @@
 #include <vector>
 #include <unordered_map>
 
+struct COMMANDS_SHARED ExecutingOutput {
+    ExecutingOutput(
+        int err,
+        int pos,
+        std::string_view guide
+    ): errorCode(err), errorPos(pos), otherspecArgumentGuide(guide) {}
+    int errorCode = 0;
+    int errorPos = 0;
+    std::string otherspecArgumentGuide = "";
+};
+
 class COMMANDS_SHARED Command {
     private:
         Command(const Command&);
@@ -28,6 +39,8 @@ class COMMANDS_SHARED Command {
             None, Set, Item, NewSetName, Other
         };
 
+        
+
         struct CommandNode {
             CommandNode(
                     int n,
@@ -35,7 +48,7 @@ class COMMANDS_SHARED Command {
                     const std::string& key,
                     bool term,
                     Specifier spec,
-                    std::function<std::pair<int, int>(int, char*[])> func
+                    std::function<ExecutingOutput(int, char*[])> func
                 ) 
                 : nodePos(n), name(nm), keyword(key), terminal(term), specExpected(spec), execution(func) {}
 
@@ -45,7 +58,7 @@ class COMMANDS_SHARED Command {
             bool terminal;
             Specifier specExpected;
             std::unordered_map<std::string, int> subordinates; 
-            std::function<std::pair<int, int>(int, char*[])> execution;
+            std::function<ExecutingOutput(int, char*[])> execution;
         };
 
         std::vector<CommandNode> cmdTree;
@@ -53,27 +66,27 @@ class COMMANDS_SHARED Command {
         // OPERATING FUNCTIONS
         int addCommandNode(std::string_view keyword, const Specifier& specExpected);
         int addCommandNode(std::string_view keyword, const Specifier& specExpected, 
-            std::function<std::pair<int, int>(int, char*[])> func);
+            std::function<ExecutingOutput(int, char*[])> func);
         int addCommandNode(std::string_view keyword, const Specifier& specExpected, int dependingNode);
         int addCommandNode(std::string_view keyword, const Specifier& specExpected, int dependingNode,
-            std::function<std::pair<int, int>(int, char*[])> func);
+            std::function<ExecutingOutput(int, char*[])> func);
 
         void addSubordinate(const int sub, const int dependingNode);
 
         // EXECUTING FUNCTIONS
-        std::pair<int, int> Zeus(int argc, char* argv[]);
-        std::pair<int, int> quiz_help(int argc, char* argv[]);
-        std::pair<int, int> quiz_about(int argc, char* argv[]);
-        std::pair<int, int> quiz_new_set_$set(int argc, char* argv[]);
-        std::pair<int, int> quiz_new_set_$set_item(int argc, char* argv[]);
-        std::pair<int, int> quiz_learn_set_$set(int argc, char* argv[]);
-        std::pair<int, int> quiz_learn_set_$set_item_$item(int argc, char* argv[]);
-        std::pair<int, int> quiz_delete_set_$set(int argc, char* argv[]);
-        std::pair<int, int> quiz_delete_set_$set_item_$item(int argc, char* argv[]);
-        std::pair<int, int> quiz_rename_set_$set_$newSetName(int argc, char* argv[]);
-        std::pair<int, int> quiz_set(int argc, char* argv[]);
-        std::pair<int, int> quiz_set_$set(int argc, char* argv[]);
-        std::pair<int, int> quiz_set_$set_item_$item(int argc, char* argv[]);
+        ExecutingOutput Zeus(int argc, char* argv[]);
+        ExecutingOutput quiz_help(int argc, char* argv[]);
+        ExecutingOutput quiz_about(int argc, char* argv[]);
+        ExecutingOutput quiz_new_set_$set(int argc, char* argv[]);
+        ExecutingOutput quiz_new_set_$set_item(int argc, char* argv[]);
+        ExecutingOutput quiz_learn_set_$set(int argc, char* argv[]);
+        ExecutingOutput quiz_learn_set_$set_item_$item(int argc, char* argv[]);
+        ExecutingOutput quiz_delete_set_$set(int argc, char* argv[]);
+        ExecutingOutput quiz_delete_set_$set_item_$item(int argc, char* argv[]);
+        ExecutingOutput quiz_rename_set_$set_$newSetName(int argc, char* argv[]);
+        ExecutingOutput quiz_set(int argc, char* argv[]);
+        ExecutingOutput quiz_set_$set(int argc, char* argv[]);
+        ExecutingOutput quiz_set_$set_item_$item(int argc, char* argv[]);
     public:
         Command(){
             // Root
@@ -143,5 +156,6 @@ class COMMANDS_SHARED Command {
         }
         ~Command(){}
 
-        std::pair<int, int> Command::lookUp(int pos, int argc, char* argv[], const int nodePos);
+
+        ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodePos);
 };
