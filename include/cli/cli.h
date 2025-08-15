@@ -16,7 +16,6 @@ class CLI_SHARED App{
         ~App(){};
 
         void run(int agrc, char* agrv[]);
-        void help(int argc, char* argv[], ExecutingOutput exeResult);
 
     private:
         // Declaring (but not defining) to disallow copy constructor and operator=
