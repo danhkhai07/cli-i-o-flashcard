@@ -4,7 +4,8 @@ PACKAGE/
 releases/
 install/
 tester/
+bash-scripts/
 
 /plan.txt
 /logs.txt
-/bash.sh
+/*.sh
