@@ -146,7 +146,8 @@ void Command::resolveExecutingOutput(int argc, char* argv[], ExecutingOutput exe
         if (discontinueGuide) break;
     }
     if (!discontinueGuide && !cmdTree[currentNode].subordinates.empty()){
-        std::cout << " <";
+        if (cmdTree[currentNode].terminal) std::cout << " [";
+        else std::cout << " <";
         bool firstEncounter = false;
         for (auto it : cmdTree[currentNode].subordinates){
             if (it.first[0] == '-' && it.first[1] != '-') continue;
@@ -157,7 +158,8 @@ void Command::resolveExecutingOutput(int argc, char* argv[], ExecutingOutput exe
             if (it.first[0] == '$') std::cout << HelpEquivalentKeyword.at(it.first);
             else std::cout << it.first;
         } 
-        std::cout << ">";
+        if (cmdTree[currentNode].terminal) std::cout << "]";
+        else std::cout << ">";
     }
     std::cout << "\n";
 
