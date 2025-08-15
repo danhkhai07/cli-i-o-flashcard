@@ -3,7 +3,7 @@
 #include <iostream>
 #include <set>
 
-static const std::map<int, std::string> returnMessage = {
+static const std::map<int, std::string> ErrorCodeMessage = {
     {-1, "Internal error"},
     {0, ""},
     {1, "Invalid argument format"},
@@ -18,6 +18,12 @@ static const std::map<int, std::string> returnMessage = {
     {10, "Card index is out of bounds"}
 };
 
+static const std::map<std::string, std::string> HelpEquivalentKeyword = {
+    {"$set", "SET"},
+    {"$item", "INDEX"},
+    {"$newSetName", "NEW-SET-NAME"}
+};
+
 static const std::set<int> DiscontinuedMsgCode = {
     -1, 0, 2 
 }; 
@@ -25,7 +31,7 @@ static const std::set<int> DiscontinuedMsgCode = {
 ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodePos){
     CommandNode node = cmdTree[nodePos];
     if (argc - pos < 2){
-        if (!node.terminal) return ExecutingOutput(2, pos);
+        if (!node.terminal) return ExecutingOutput(2, pos + 1);
         else return node.execution(argc, argv);
     }
 
@@ -70,17 +76,67 @@ void Command::resolveExecutingOutput(int argc, char* argv[], ExecutingOutput exe
     // std::cout << exeOut.errorCode << " " << exeOut.errorPos << "\n";
     if (exeOut.errorCode == 0) return;
 
+    std::string shortTab = "    ";
+
     bool discontinued = DiscontinuedMsgCode.find(exeOut.errorCode) != DiscontinuedMsgCode.end();
-    std::cout << "fatal: " << returnMessage.at(exeOut.errorCode);
+    std::cout << "fatal: " << ErrorCodeMessage.at(exeOut.errorCode);
     if (discontinued) std::cout << ".\n";
     else std::cout << ": `" << argv[exeOut.errorPos] << "`\n";
 
-    std::cout << "\nUsage: ";
+    std::cout << "\nUsage: \n" << shortTab << "$ quiz";
+    int currentNode = 0;
+    bool discontinueGuide = false;
+    for (int i = 1; i < exeOut.errorPos; i++){
+        Specifier previousSpec = cmdTree[currentNode].specExpected;
+        std::string tmp = std::string(argv[i]);
+        std::cout << ' '; 
+
+        switch (previousSpec){
+            case Specifier::None:
+                if (tmp == "-s") tmp = "--set";
+                if (tmp == "-i") tmp = "--item";
+                std::cout << tmp;
+                currentNode = cmdTree[currentNode].subordinates.find(tmp)->second;
+                break;
+            case Specifier::Set:
+                std::cout << '<' << HelpEquivalentKeyword.at("$set") << '>';
+                currentNode = cmdTree[currentNode].subordinates.find("$set")->second;
+                break;
+            case Specifier::Item:
+                std::cout << '<' << HelpEquivalentKeyword.at("$item") << '>';
+                currentNode = cmdTree[currentNode].subordinates.find("$item")->second;
+                break;
+            case Specifier::NewSetName:
+                std::cout << '<' << HelpEquivalentKeyword.at("$newSetName") << '>';
+                currentNode = cmdTree[currentNode].subordinates.find("$newSetName")->second;
+                break;
+            case Specifier::Other:
+                std::cout << exeOut.otherspecArgumentGuide;
+                discontinueGuide = true;
+                break;
+        }
+        if (discontinueGuide) break;
+    }
+    if (!discontinueGuide && !cmdTree[currentNode].subordinates.empty()){
+        std::cout << " <";
+        bool firstEncounter = false;
+        for (auto it : cmdTree[currentNode].subordinates){
+            if (it.first[0] == '-' && it.first[1] != '-') continue;
+
+            if (firstEncounter) std::cout << '|';
+            else firstEncounter = true;
+
+            if (it.first[0] == '$') std::cout << HelpEquivalentKeyword.at(it.first);
+            else std::cout << it.first;
+        } 
+        std::cout << ">";
+    }
     std::cout << "\n";
 
-    std::cout << "\nOptions:\n\t";
-    for (std::string it : exeOut.options){
-        std::cout << it << "\n\t";
+    if (exeOut.options.empty()) return;
+    std::cout << "\nOptions:\n" << shortTab;
+    for (auto it : exeOut.options){
+        std::cout << it.first << '\n' << '\t' << it.second << '\n' << shortTab;
     }
     return;
 }
@@ -161,8 +217,10 @@ ExecutingOutput Command::quiz_new_set_$set(int argc, char* argv[]){
     // std::cout << "Reached.\n";
     ExecutingOutput exeOut;
     if (argc <= 4){
-        std::string option_s = "-s, --set <SETNAME>\tName of the new set";
+        std::pair<std::string, std::string> option_s = 
+            {"-s, --set <SETNAME>", "Name of the new set"};
         exeOut.options.push_back(option_s);
+
         int exeCode = DataHandler.newSet(setName);
         exeOut.errorCode = exeCode;
         if (exeCode != 0) exeOut.errorPos = 3;
@@ -171,9 +229,12 @@ ExecutingOutput Command::quiz_new_set_$set(int argc, char* argv[]){
     }
 
     exeOut.otherspecArgumentGuide = "--front <CONTENT> --back <CONTENT>";
-    std::string option_s = "-s, --set <SETNAME>\tName of the existing set";
-    std::string option_f = "-f, --front <CONTENT>\tSet the front content (required)";
-    std::string option_b = "-b, --back <CONTENT>\tSet the back content (required)";
+    std::pair<std::string, std::string> option_s = 
+        {"-s, --set <SETNAME>", "Name of the existing set"};
+    std::pair<std::string, std::string> option_f = 
+        {"-f, --front <CONTENT>", "Set the front content (required)"};
+    std::pair<std::string, std::string> option_b = 
+        {"-b, --back <CONTENT>", "Set the back content (required)"};
     exeOut.options.push_back(option_s);
     exeOut.options.push_back(option_f);
     exeOut.options.push_back(option_b);
