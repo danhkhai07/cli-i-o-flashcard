@@ -75,8 +75,13 @@ void Command::resolveExecutingOutput(int argc, char* argv[], ExecutingOutput exe
     if (discontinued) std::cout << ".\n";
     else std::cout << ": `" << argv[exeOut.errorPos] << "`\n";
 
-    std::cout << "\nUsage:\n\t";
+    std::cout << "\nUsage: ";
+    std::cout << "\n";
 
+    std::cout << "\nOptions:\n\t";
+    for (std::string it : exeOut.options){
+        std::cout << it << "\n\t";
+    }
     return;
 }
 
@@ -167,7 +172,7 @@ ExecutingOutput Command::quiz_new_set_$set(int argc, char* argv[]){
 
     exeOut.otherspecArgumentGuide = "--front <CONTENT> --back <CONTENT>";
     std::string option_s = "-s, --set <SETNAME>\tName of the existing set";
-    std::string option_f = "-f, --front <CONTENT\tSet the front content (required)";
+    std::string option_f = "-f, --front <CONTENT>\tSet the front content (required)";
     std::string option_b = "-b, --back <CONTENT>\tSet the back content (required)";
     exeOut.options.push_back(option_s);
     exeOut.options.push_back(option_f);
@@ -210,6 +215,26 @@ ExecutingOutput Command::quiz_new_set_$set(int argc, char* argv[]){
         return exeOut;
     }
     
+    if (!DataHandler.setExist(setName)){
+        exeOut.errorCode = 8;
+        exeOut.errorPos = 3;
+        return exeOut;
+    }
+
+    if (DataHandler.cardContentExist(setName, front) != -1){
+        std::string answer = "";
+        std::cout << "Card front already exists. Are you sure to add the card?\n";
+        while (answer == ""){
+            std::cout << "[Y/N]: ";
+            if (!(std::cin >> answer)) return exeOut;
+            if (answer != "Y" && answer != "y" && answer != "N" && answer != "n") answer = "";
+        }
+        if (answer == "N" || answer == "n"){
+            std::cout << "Card addition has been discarded.\n";
+            return exeOut;
+        }
+    }
+
     int res = DataHandler.addCard(setName, front, back);
     exeOut.errorCode = res;
     if (res != 0) exeOut.errorPos = 3;
@@ -225,6 +250,10 @@ ExecutingOutput Command::quiz_learn_set_$set(int argc, char* argv[]){
 ExecutingOutput Command::quiz_learn_set_$set_item_$item(int argc, char* argv[]){
     std::cout << "Reached.\n";
     return ExecutingOutput(0, 0, "");
+}
+
+ExecutingOutput Command::quiz_delete_all(int argc, char* argv[]){
+    return ExecutingOutput(0, 0);
 }
 
 ExecutingOutput Command::quiz_delete_set_$set(int argc, char* argv[]){
