@@ -84,7 +84,6 @@ class COMMANDS_SHARED Command {
         ExecutingOutput quiz_help(int argc, char* argv[]);
         ExecutingOutput quiz_about(int argc, char* argv[]);
         ExecutingOutput quiz_new_set_$set(int argc, char* argv[]);
-        ExecutingOutput quiz_new_set_$set_item(int argc, char* argv[]);
         ExecutingOutput quiz_learn_set_$set(int argc, char* argv[]);
         ExecutingOutput quiz_learn_set_$set_item_$item(int argc, char* argv[]);
         ExecutingOutput quiz_delete_all(int argc, char* argv[]);
