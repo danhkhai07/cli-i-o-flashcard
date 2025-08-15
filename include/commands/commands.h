@@ -47,8 +47,6 @@ class COMMANDS_SHARED Command {
             None, Set, Item, NewSetName, Other
         };
 
-        
-
         struct CommandNode {
             CommandNode(
                     int n,
@@ -89,6 +87,7 @@ class COMMANDS_SHARED Command {
         ExecutingOutput quiz_new_set_$set_item(int argc, char* argv[]);
         ExecutingOutput quiz_learn_set_$set(int argc, char* argv[]);
         ExecutingOutput quiz_learn_set_$set_item_$item(int argc, char* argv[]);
+        ExecutingOutput quiz_delete_all(int argc, char* argv[]);
         ExecutingOutput quiz_delete_set_$set(int argc, char* argv[]);
         ExecutingOutput quiz_delete_set_$set_item_$item(int argc, char* argv[]);
         ExecutingOutput quiz_rename_set_$set_$newSetName(int argc, char* argv[]);
@@ -96,7 +95,10 @@ class COMMANDS_SHARED Command {
         ExecutingOutput quiz_set_$set(int argc, char* argv[]);
         ExecutingOutput quiz_set_$set_item_$item(int argc, char* argv[]);
     public:
-        Command(){
+        Command(int argc, char* argv[]){
+            // Assign DataHandler
+            DataHandler = Data(argc, argv);
+            
             // Root
             int root = addCommandNode("root", Specifier::None);
             
@@ -124,6 +126,10 @@ class COMMANDS_SHARED Command {
             int root_learn_s   = addCommandNode("-s", Specifier::Set, root_learn);
             int root_delete_set = addCommandNode("--set", Specifier::Set, root_delete);
             int root_delete_s   = addCommandNode("-s", Specifier::Set, root_delete);
+            int root_delete_all     = addCommandNode("--all", Specifier::None, root_delete, 
+                [this](int argc, char* argv[]) { return quiz_delete_all(argc, argv); });
+            int root_delete_a     = addCommandNode("-a", Specifier::None, root_delete, 
+                [this](int argc, char* argv[]) { return quiz_delete_all(argc, argv); });
             int root_rename_set = addCommandNode("--set", Specifier::Set, root_rename);
             int root_rename_s   = addCommandNode("-s", Specifier::Set, root_rename);
             
@@ -164,6 +170,6 @@ class COMMANDS_SHARED Command {
         }
         ~Command(){}
 
-
         ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodePos);
+        void resolveExecutingOutput(int argc, char* argv[], ExecutingOutput exeOut);
 };
