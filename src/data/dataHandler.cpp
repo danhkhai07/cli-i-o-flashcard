@@ -6,24 +6,46 @@
 #include <climits>
 #include <chrono>
 
+static const int MAXIMUM_SET_SIZE = 2*1e9;
+
+std::filesystem::path Data::getExecutableDirectory(char* argv0){
+    std::filesystem::path pth = std::filesystem::canonical(std::filesystem::path(argv0)).parent_path();
+    pth = pth / "../data/questions.json";
+    return std::filesystem::weakly_canonical(pth);
+}
+
 int Data::load(){
-    std::ifstream in(targetPath, std::ios::in);
+    std::ifstream in(targetPath);
     if (!in) {
+        std::cerr << "Error: could not open file for reading: " << targetPath << "\n";
         dataset = nlohmann::json::object();
         return 0;
     }
+
     try {
         dataset = nlohmann::json::parse(in);
-    } catch (...) {
+    } catch (const std::exception& e) {
+        std::cerr << "JSON parse error: " << e.what() << "\n";
+        dataset = nlohmann::json::object();
         return 0;
     }
+
     return 1;
 }
 
 int Data::save(){
-    std::ofstream out(targetPath, std::ios::out | std::ios::trunc);
+    std::ofstream out(targetPath);
+    if (!out) {
+        std::cerr << "Error: could not open file for writing: " << targetPath << "\n";
+        return 0;
+    }
+
     out << dataset.dump(4);
-    if (!out) return 0;
+    if (!out) {
+        std::cerr << "Error: write failed\n";
+        return 0;
+    }
+
     return 1;
 }
 
@@ -39,7 +61,7 @@ int Data::addCard(std::string_view setName, std::string_view front, std::string_
     using namespace std::chrono;
 
     if (!setExist(setName)) return 8;        // set does not exist
-    if (setSize(setName) >= INT_MAX - 1) return 9; // set full
+    if (setSize(setName) >= MAXIMUM_SET_SIZE) return 9; // set full
 
     nlohmann::json pData;
     pData["front"] = std::string(front);

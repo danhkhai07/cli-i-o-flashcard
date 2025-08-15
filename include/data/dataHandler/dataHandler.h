@@ -14,9 +14,11 @@
 
 class DATAHANDLER_SHARED Data {
 private:
-    nlohmann::json dataset;
-    std::filesystem::path exePath = std::filesystem::current_path();
-    std::filesystem::path targetPath = exePath / "../data/questions.json";
+     /**
+     * @brief Get directory of program's executable.
+     * @return Path to executable directory
+     */
+    std::filesystem::path getExecutableDirectory(char* argv0);
 
     /**
      * @brief Loads the dataset from questions.json.
@@ -30,8 +32,13 @@ private:
      */
     int save();
 
+    nlohmann::json dataset;
+    std::filesystem::path targetPath;
+    
 public:
-    Data() {
+    Data(){}
+    Data(int argc, char* argv[]) {
+        targetPath = getExecutableDirectory(argv[0]);
         load();
     }
     ~Data() {
