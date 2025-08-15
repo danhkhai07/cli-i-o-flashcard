@@ -62,9 +62,9 @@ ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodeP
                 exeOut.options.push_back({"-s, --set <SET-NAME>", "Name of the existing set"});
                 break;
              case Specifier::NewSetName:
+                exeOut.options.push_back({"<NEW-SET-NAME>", "Name of the new set"});
                 newSetName = argv[pos + 1]; 
                 it = node.subordinates.find("$newSetName");
-                exeOut.options.push_back({"<NEW-SET-NAME>", "Name of the new set"});
                 break;
             case Specifier::Item:
                 try { itemPos = std::stoi(argv[pos + 1]); }
