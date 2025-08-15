@@ -25,7 +25,7 @@ struct COMMANDS_SHARED ExecutingOutput {
     int errorCode = 0;
     int errorPos = 0;
     std::string otherspecArgumentGuide = "";
-    std::vector<std::string> options;
+    std::vector<std::pair<std::string, std::string>> options;
 };
 
 class COMMANDS_SHARED Command {
@@ -100,7 +100,8 @@ class COMMANDS_SHARED Command {
             DataHandler = Data(argc, argv);
             
             // Root
-            int root = addCommandNode("root", Specifier::None);
+            int root = addCommandNode("root", Specifier::None,
+                [this](int argc, char* argv[]) { return quiz_help(argc, argv); });
             
             // 1st layer
             int root_help      = addCommandNode("help", Specifier::None, root,
