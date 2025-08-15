@@ -107,7 +107,7 @@ void Command::resolveExecutingOutput(int argc, char* argv[], ExecutingOutput exe
     std::string shortTab = "    ";
 
     bool discontinued = DiscontinuedMsgCode.find(exeOut.errorCode) != DiscontinuedMsgCode.end();
-    std::cout << "fatal: " << ErrorCodeMessage.at(exeOut.errorCode);
+    std::cout << "Error: " << ErrorCodeMessage.at(exeOut.errorCode);
     if (discontinued) std::cout << ".\n";
     else std::cout << ": `" << argv[exeOut.errorPos] << "`\n";
 
