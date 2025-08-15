@@ -52,7 +52,7 @@ public:
      * @param setName The name of the set.
      * @param front The front text of the card.
      * @param back The back text of the card.
-     * @return 0 on success, 6 if set name is invalid, 8 if set doesn't exist, 9 if set is full.
+     * @return 0 on success, 8 if set doesn't exist, 9 if set is full.
      */
     int addCard(std::string_view setName, std::string_view front, std::string_view back);
 
