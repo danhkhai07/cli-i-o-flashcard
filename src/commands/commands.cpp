@@ -67,6 +67,7 @@ ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodeP
                 exeOut.options.push_back({"<NEW-SET-NAME>", "Name of the new set"});
                 break;
             case Specifier::Item:
+                exeOut.options.push_back({"<INDEX>", "Index of the existing item in aforementioned set"});
                 try { itemPos = std::stoi(argv[pos + 1]); }
                 catch (std::logic_error) {
                     exeOut.errorCode = 1;
@@ -74,7 +75,6 @@ ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodeP
                     return exeOut;
                 }
                 it = node.subordinates.find("$item");
-                exeOut.options.push_back({"<INDEX>", "Index of the existing item in aforementioned set"});
                 break;
             case Specifier::Other:
                 if (node.terminal) {
