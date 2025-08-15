@@ -1,11 +1,31 @@
 #include "commands/commands.h"
 
 #include <iostream>
+#include <set>
+
+static const std::map<int, std::string> returnMessage = {
+    {-1, "Internal error"},
+    {0, ""},
+    {1, "Invalid argument format"},
+    {2, "Missing argument"},
+    {3, "Unknown command"},
+    {4, "Conflicting options"},
+    {5, "Too many arguments"},
+    {6, "Invalid name"},
+    {7, "Name already exists"},
+    {8, "Set does not exist"},
+    {9, "Set has reached its maximum capacity (2*10^9)"},
+    {10, "Card index is out of bounds"}
+};
+
+static const std::set<int> DiscontinuedMsgCode = {
+    -1, 0, 2 
+}; 
 
 ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodePos){
     CommandNode node = cmdTree[nodePos];
     if (argc - pos < 2){
-        if (!node.terminal) return ExecutingOutput(2, pos, "");
+        if (!node.terminal) return ExecutingOutput(2, pos);
         else return node.execution(argc, argv);
     }
 
@@ -44,6 +64,20 @@ ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodeP
         if (node.specExpected != Specifier::None) return ExecutingOutput(2, pos);
         else return lookUp(pos + 1, argc, argv, it->second);
     }
+}
+
+void Command::resolveExecutingOutput(int argc, char* argv[], ExecutingOutput exeOut){
+    // std::cout << exeOut.errorCode << " " << exeOut.errorPos << "\n";
+    if (exeOut.errorCode == 0) return;
+
+    bool discontinued = DiscontinuedMsgCode.find(exeOut.errorCode) != DiscontinuedMsgCode.end();
+    std::cout << "fatal: " << returnMessage.at(exeOut.errorCode);
+    if (discontinued) std::cout << ".\n";
+    else std::cout << ": `" << argv[exeOut.errorPos] << "`\n";
+
+    std::cout << "\nUsage:\n\t";
+
+    return;
 }
 
 /// @brief Add new command node
@@ -127,6 +161,7 @@ ExecutingOutput Command::quiz_new_set_$set(int argc, char* argv[]){
         int exeCode = DataHandler.newSet(setName);
         exeOut.errorCode = exeCode;
         if (exeCode != 0) exeOut.errorPos = 3;
+        else std::cout << "Set `" << setName << "` has been created.\n";
         return exeOut;
     }
 
@@ -141,32 +176,44 @@ ExecutingOutput Command::quiz_new_set_$set(int argc, char* argv[]){
     std::string front = "", back = "";
     bool f_arg = false, b_arg = false;
     for (int i = 4; i < argc; i++){
-        if (argv[i] == "--front" or argv[i] == "-f"){
-            if (argv[i + 1] == nullptr){
-                exeOut.errorCode = 2;
-                exeOut.errorPos = i;
-                return exeOut;
-            }
-            front = argv[i++];
+        if (std::string(argv[i]) == "--front" || std::string(argv[i]) == "-f"){
             f_arg = true;
-        } else if (argv[i] == "--back" or argv[i] == "-b"){
-            if (argv[i + 1] == nullptr){
-                exeOut.errorCode = 2;
-                exeOut.errorPos = i;
-                return exeOut;
-            }
-            back = argv[i++];
+            b_arg = false;
+            continue;
+        }
+
+        if (std::string(argv[i]) == "--back" || std::string(argv[i]) == "-b"){
             b_arg = true;
-        } else {
-            exeOut.errorCode = 5;
+            f_arg = false;
+            continue;
+        }
+
+        if (f_arg){
+            if (front != "") front += " ";
+            front += argv[i];
+        }   
+
+        if (b_arg){
+            if (back != "") back += " ";
+            back += argv[i];
+        }
+
+        if ((!f_arg) && (!b_arg)){
+            exeOut.errorCode = 1;
             exeOut.errorPos = i;
             return exeOut;
         }
     }
+    if (front == "" || back == ""){
+        exeOut.errorCode = 2;
+        exeOut.errorPos = argc - 1;
+        return exeOut;
+    }
     
     int res = DataHandler.addCard(setName, front, back);
     exeOut.errorCode = res;
-    if (res != 0) exeOut.errorPos = 4;
+    if (res != 0) exeOut.errorPos = 3;
+    else std::cout << "Card has been added.\n";
     return exeOut;
 }
 
