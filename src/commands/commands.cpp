@@ -59,7 +59,7 @@ ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodeP
             case Specifier::Set:
                 setName = argv[pos + 1]; 
                 it = node.subordinates.find("$set");
-                exeOut.options.push_back({"-s, --set <SET-NAME>", "Name of the existing set"});
+                exeOut.options.push_back({"-s, --set <SET-NAME>", "Name of the existing set. No space (' ') allowed."});
                 break;
              case Specifier::NewSetName:
                 exeOut.options.push_back({"<NEW-SET-NAME>", "Name of the new set"});
@@ -145,6 +145,11 @@ void Command::resolveExecutingOutput(int argc, char* argv[], ExecutingOutput exe
         }
         if (discontinueGuide) break;
     }
+    if (cmdTree[currentNode].specExpected == Specifier::Other){
+        std::cout << ' ' << exeOut.otherspecArgumentGuide;
+        discontinueGuide = true;
+    }
+    
     if (!discontinueGuide && !cmdTree[currentNode].subordinates.empty()){
         if (cmdTree[currentNode].terminal) std::cout << " [";
         else std::cout << " <";
@@ -262,9 +267,9 @@ ExecutingOutput Command::quiz_new_set_$set(int argc, char* argv[]){
     std::pair<std::string, std::string> option_s = 
         {"-s, --set <SETNAME>", "Name of the existing set"};
     std::pair<std::string, std::string> option_f = 
-        {"-f, --front <CONTENT>", "Set the front content (required)"};
+        {"-f, --front <CONTENT>", "Set the front content. Space (' ') allowed. (required)"};
     std::pair<std::string, std::string> option_b = 
-        {"-b, --back <CONTENT>", "Set the back content (required)"};
+        {"-b, --back <CONTENT>", "Set the back content. Space (' ') allowed. (required)"};
     exeOut.options.push_back(option_s);
     exeOut.options.push_back(option_f);
     exeOut.options.push_back(option_b);
