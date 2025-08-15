@@ -28,47 +28,75 @@ static const std::set<int> DiscontinuedMsgCode = {
     -1, 0, 2 
 }; 
 
-ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodePos){
+ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodePos,
+    std::vector<std::pair<std::string, std::string>> options){
     CommandNode node = cmdTree[nodePos];
+    ExecutingOutput exeOut;
+    exeOut.options = options;
+
     if (argc - pos < 2){
-        if (!node.terminal) return ExecutingOutput(2, pos + 1);
-        else return node.execution(argc, argv);
+        if (!node.terminal){
+            exeOut.errorCode = 2;
+            exeOut.errorPos = pos + 1;
+            return exeOut;
+        } else return node.execution(argc, argv);
     }
 
     auto it = node.subordinates.find(argv[pos + 1]);
     if (it == node.subordinates.end()){
         // Switch case for each type of specifier
         switch (node.specExpected){
+            case Specifier::None:
+                if (node.terminal){
+                    exeOut.errorCode = 5;
+                    exeOut.errorPos = pos + 1;
+                    return exeOut;
+                } else {
+                    exeOut.errorCode = 1;
+                    exeOut.errorPos = pos + 1;
+                    return exeOut;
+                }
             case Specifier::Set:
                 setName = argv[pos + 1]; 
                 it = node.subordinates.find("$set");
+                exeOut.options.push_back({"-s, --set <SET-NAME>", "Name of the existing set"});
                 break;
              case Specifier::NewSetName:
                 newSetName = argv[pos + 1]; 
                 it = node.subordinates.find("$newSetName");
+                exeOut.options.push_back({"<NEW-SET-NAME>", "Name of the new set"});
                 break;
             case Specifier::Item:
                 try { itemPos = std::stoi(argv[pos + 1]); }
-                catch (std::logic_error) { return ExecutingOutput(1, pos + 1); }
+                catch (std::logic_error) {
+                    exeOut.errorCode = 1;
+                    exeOut.errorPos = pos + 1;
+                    return exeOut;
+                }
                 it = node.subordinates.find("$item");
+                exeOut.options.push_back({"<INDEX>", "Index of the existing item in aforementioned set"});
                 break;
-            case Specifier::None:
-                if (node.terminal) return ExecutingOutput(5, pos + 1);
-                else return ExecutingOutput(1, pos + 1);
             case Specifier::Other:
                 if (node.terminal) {
                     return node.execution(argc, argv);
+                } else {
+                    exeOut.errorCode = -1;
+                    exeOut.errorPos = pos;
+                    return exeOut;
                 }
-                else return ExecutingOutput(-1, pos);
 
             default:
-                return ExecutingOutput(-1, pos + 1);
+                exeOut.errorCode = -1;
+                exeOut.errorPos = pos + 1;
+                return exeOut;
         }
-        return lookUp(pos + 1, argc, argv, it->second);
-    }
-    else {
-        if (node.specExpected != Specifier::None) return ExecutingOutput(2, pos);
-        else return lookUp(pos + 1, argc, argv, it->second);
+        return lookUp(pos + 1, argc, argv, it->second, exeOut.options);
+    } else {
+        if (node.specExpected != Specifier::None){
+            exeOut.errorCode = -1;
+            exeOut.errorPos = pos;
+            return exeOut;
+        } else return lookUp(pos + 1, argc, argv, it->second, exeOut.options);
     }
 }
 
