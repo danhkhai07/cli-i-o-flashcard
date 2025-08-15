@@ -171,6 +171,7 @@ class COMMANDS_SHARED Command {
         }
         ~Command(){}
 
-        ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodePos);
+        ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodePos,
+            std::vector<std::pair<std::string, std::string>> options);
         void resolveExecutingOutput(int argc, char* argv[], ExecutingOutput exeOut);
 };
