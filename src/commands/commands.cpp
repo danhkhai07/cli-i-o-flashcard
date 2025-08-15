@@ -19,7 +19,7 @@ static const std::map<int, std::string> ErrorCodeMessage = {
 };
 
 static const std::map<std::string, std::string> HelpEquivalentKeyword = {
-    {"$set", "SET"},
+    {"$set", "SET-NAME"},
     {"$item", "INDEX"},
     {"$newSetName", "NEW-SET-NAME"}
 };
@@ -218,7 +218,7 @@ ExecutingOutput Command::quiz_new_set_$set(int argc, char* argv[]){
     ExecutingOutput exeOut;
     if (argc <= 4){
         std::pair<std::string, std::string> option_s = 
-            {"-s, --set <SETNAME>", "Name of the new set"};
+            {"-s, --set <SET-NAME>", "Name of the new set"};
         exeOut.options.push_back(option_s);
 
         int exeCode = DataHandler.newSet(setName);
@@ -228,7 +228,7 @@ ExecutingOutput Command::quiz_new_set_$set(int argc, char* argv[]){
         return exeOut;
     }
 
-    exeOut.otherspecArgumentGuide = "--front <CONTENT> --back <CONTENT>";
+    exeOut.otherspecArgumentGuide = "--front <FRONT-CONTENT> --back <BACK-CONTENT>";
     std::pair<std::string, std::string> option_s = 
         {"-s, --set <SETNAME>", "Name of the existing set"};
     std::pair<std::string, std::string> option_f = 
