@@ -10,14 +10,22 @@
 #include <unordered_map>
 
 struct COMMANDS_SHARED ExecutingOutput {
+    ExecutingOutput(){}
     ExecutingOutput(
         int err,
         int pos,
         std::string_view guide
     ): errorCode(err), errorPos(pos), otherspecArgumentGuide(guide) {}
+
+    ExecutingOutput(
+        int err,
+        int pos
+    ): errorCode(err), errorPos(pos) {}
+
     int errorCode = 0;
     int errorPos = 0;
     std::string otherspecArgumentGuide = "";
+    std::vector<std::string> options;
 };
 
 class COMMANDS_SHARED Command {
