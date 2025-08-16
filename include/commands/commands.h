@@ -80,6 +80,9 @@ class COMMANDS_SHARED Command {
 
         void addSubordinate(const int sub, const int dependingNode);
 
+        // UTILITY FUNCTIONS
+        Card learnCard(const Card& card);
+
         // EXECUTING FUNCTIONS
         ExecutingOutput Zeus(int argc, char* argv[]);
         ExecutingOutput quiz_help(int argc, char* argv[]);
