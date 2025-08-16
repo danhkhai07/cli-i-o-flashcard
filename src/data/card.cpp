@@ -22,13 +22,6 @@ CardState inputToState(std::string_view input) {
     return stateMap[std::string(input)];
 }
 
-void Card::printGradeTimeInt(){
-    std::cout << "Again: " << (Card::gradeTimeIntervals[Grade::Again] < 1 ? Card::gradeTimeIntervals[Grade::Again] * 1440 : Card::gradeTimeIntervals[Grade::Again]);
-    std::cout << " | Hard: " << (Card::gradeTimeIntervals[Grade::Hard] < 1 ? Card::gradeTimeIntervals[Grade::Hard] * 1440 : Card::gradeTimeIntervals[Grade::Hard]);
-    std::cout << " | Good: " << (Card::gradeTimeIntervals[Grade::Good] < 1 ? Card::gradeTimeIntervals[Grade::Good] * 1440 : Card::gradeTimeIntervals[Grade::Good]);
-    std::cout << " | Easy: " << Card::gradeTimeIntervals[Grade::Easy] << "\n";
-}
-
 void Card::review(const Grade& grade){
     static std::unordered_map<CardState, std::function<void(const Grade& grade)>> stateHandler = {
         {CardState::New, [this](const Grade& grade){ learnHandler(grade); } },
