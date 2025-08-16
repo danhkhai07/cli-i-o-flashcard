@@ -46,7 +46,6 @@ int Data::save(){
         return 0;
     }
 
-    std::cout << "Data successfully saved.\n";
     return 1;
 }
 
