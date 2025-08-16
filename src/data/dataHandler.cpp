@@ -46,6 +46,7 @@ int Data::save(){
         return 0;
     }
 
+    std::cout << "Data successfully saved.\n";
     return 1;
 }
 
@@ -156,6 +157,7 @@ int Data::writeSet(std::vector<Card>& in, std::string_view setName){
     }
 
     dataset[setName] = tmpSet;
+    save();
     return 0;
 }
 
@@ -190,6 +192,7 @@ int Data::writeCard(Card& in, std::string_view setName, const int idx){
     tmpCard["interval"] = in.interval;
 
     dataset[setName][idx] = tmpCard;
+    save();
     return 0;
 }
 
