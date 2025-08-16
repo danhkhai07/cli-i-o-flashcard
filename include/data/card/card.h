@@ -88,6 +88,8 @@ public:
      */
     bool due();
 
+    inline bool operator<(const Card& other);
+
 private:
     /// Predefined learning step intervals (in days, fractional for minutes).
     inline static const std::vector<double> learningStep = {1.0/1440, 10.0/1440, 15.0/1440};

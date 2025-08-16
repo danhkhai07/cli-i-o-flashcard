@@ -66,6 +66,20 @@ bool Card::due(){
     return elapsed.count() >= (interval * 86400.0);
 }
 
+bool Card::operator<(const Card& other){
+    using namespace std::chrono;
+
+    std::istringstream lhsIn(lastRefresh);
+    date::sys_time<seconds> lhs;
+    lhsIn >> date::parse("%F %T", lhs);
+
+    std::istringstream rhsIn(other.lastRefresh);
+    date::sys_time<seconds> rhs;
+    rhsIn >> date::parse("%F %T", rhs);
+
+    return lhs < rhs;
+}
+
 void Card::printNextReview(){
     if (interval < 1.0)
         std::cout << "Next review in " << interval * 1440 << " minutes\n";
