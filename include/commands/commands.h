@@ -81,7 +81,7 @@ class COMMANDS_SHARED Command {
         void addSubordinate(const int sub, const int dependingNode);
 
         // UTILITY FUNCTIONS
-        Card learnCard(const Card& card);
+        Card learnCard(const Card& card, bool& quit_flag);
 
         // EXECUTING FUNCTIONS
         ExecutingOutput Zeus(int argc, char* argv[]);
