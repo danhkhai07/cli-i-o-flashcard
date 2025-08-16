@@ -72,8 +72,8 @@ bool Card::operator<(const Card& other){
     date::sys_time<seconds> rhsLR;
     rhsIn >> date::parse("%F %T", rhsLR);
 
-    auto lhs = lhsLR + seconds(static_cast<int>(interval*86400))        - now;
-    auto rhs = rhsLR + seconds(static_cast<int>(other.interval*86400))  - now;
+    auto lhs = now - (lhsLR + seconds(static_cast<int>(interval*86400)));
+    auto rhs = now - (rhsLR + seconds(static_cast<int>(other.interval*86400)));
 
     return lhs < rhs;
 }
