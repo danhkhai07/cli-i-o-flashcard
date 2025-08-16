@@ -93,7 +93,7 @@ private:
     inline static const std::vector<double> learningStep = {1.0/1440, 10.0/1440, 15.0/1440};
     
     /// Interval multiplier based on grade.
-    const std::function<double(Grade)> mult = [this](Grade grade) {
+    std::function<double(Grade)> mult = [this](Grade grade) {
         if (Grade::Hard == grade) return 1.2;
         if (Grade::Good == grade) return easeFactor;
         return easeFactor * 1.3; // Grade::Easy == grade
