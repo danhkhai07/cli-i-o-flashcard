@@ -57,6 +57,18 @@ public:
 
     /// Last refresh time as a string (format: "%F %T").
     std::string lastRefresh;
+    
+    /// Current state of the card.
+    CardState state = CardState::New;
+
+    /// Current learning step index.
+    int currentStep = 0;
+
+    /// Current ease factor (difficulty multiplier).
+    double easeFactor = 2.5;
+
+    /// Current review interval in days (or fraction of day for minutes).
+    double interval = 0;
 
     /**
      * @brief Reviews the card given a grade and updates scheduling data.
@@ -77,18 +89,6 @@ public:
     bool due();
 
 private:
-    /// Current state of the card.
-    CardState state = CardState::New;
-
-    /// Current learning step index.
-    int currentStep = 0;
-
-    /// Current ease factor (difficulty multiplier).
-    double easeFactor = 2.5;
-
-    /// Current review interval in days (or fraction of day for minutes).
-    double interval = 0;
-
     /// Predefined learning step intervals (in days, fractional for minutes).
     inline static const std::vector<double> learningStep = {1.0/1440, 10.0/1440, 15.0/1440};
     
