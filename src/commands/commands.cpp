@@ -1,7 +1,10 @@
 #include "commands/commands.h"
+#include "data/card/card.h" 
 
 #include <iostream>
 #include <set>
+#include <queue>
+#include <algorithm>
 
 static const std::map<int, std::string> ErrorCodeMessage = {
     {-1, "Internal error"},
@@ -62,7 +65,7 @@ ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodeP
             case Specifier::Set:
                 setName = argv[pos + 1]; 
                 it = node.subordinates.find("$set");
-                exeOut.options.push_back({"-s, --set <SET-NAME>", "Name of the existing set. No space (' ') allowed."});
+                exeOut.options.push_back({"-s, --set <SET-NAME>", "Name of the existing set. No spaces and double quote (\") is allowed."});
                 break;
              case Specifier::NewSetName:
                 exeOut.options.push_back({"<NEW-SET-NAME>", "Name of the new set"});
@@ -171,10 +174,6 @@ void Command::resolveExecutingOutput(int argc, char* argv[]){
     return;
 }
 
-/// @brief Add new command node
-/// @param keyword 
-/// @param terminal 
-/// @param specExpected 
 int Command::addCommandNode(std::string_view keyword, const Specifier& specExpected){
     int nodePos = nodeCount;
     CommandNode node(nodePos, std::string(keyword), std::string(keyword), false, specExpected, nullptr);
@@ -192,11 +191,6 @@ int Command::addCommandNode(std::string_view keyword, const Specifier& specExpec
     return nodePos;
 }
 
-/// @brief Add new command node
-/// @param keyword 
-/// @param dependingNode 
-/// @param terminal 
-/// @param specExpected 
 int Command::addCommandNode(std::string_view keyword, const Specifier& specExpected, int dependingNode){
     int nodePos = nodeCount;
     CommandNode node(nodePos, cmdTree[dependingNode].name + "_" + std::string(keyword), std::string(keyword), false, specExpected, nullptr);
@@ -206,12 +200,6 @@ int Command::addCommandNode(std::string_view keyword, const Specifier& specExpec
     return nodePos;
 }
 
-/// @brief Add new command node
-/// @param keyword 
-/// @param dependingNode 
-/// @param func 
-/// @param terminal 
-/// @param specExpected 
 int Command::addCommandNode(std::string_view keyword, const Specifier& specExpected, int dependingNode,
     std::function<ExecutingOutput(int, char*[])> func){
     int nodePos = nodeCount;
@@ -303,8 +291,8 @@ ExecutingOutput Command::quiz_new_set_$set(int argc, char* argv[]){
         std::string answer = "";
         std::cout << "Card front already exists. Are you sure to add the card?\n";
         while (answer == ""){
-            std::cout << "[Y/N]: ";
-            if (!(std::cin >> answer)) return exeOut;
+            std::cout << "[Y/N] ";
+            if (!(std::getline(std::cin, answer))) return exeOut;
             if (answer != "Y" && answer != "y" && answer != "N" && answer != "n") answer = "";
         }
         if (answer == "N" || answer == "n"){
@@ -320,11 +308,185 @@ ExecutingOutput Command::quiz_new_set_$set(int argc, char* argv[]){
     return exeOut;
 }
 
-ExecutingOutput Command::quiz_learn_set_$set(int argc, char* argv[]){
-    if (!DataHandler.setExist(setName)){
-        return exeOut;
+Card Command::learnCard(const Card& card, bool& quit_flag){
+
+    auto printFront = [card](){
+        std::cout << "Front: " << card.front << '\n';
+    };
+
+    auto printBack = [card](){
+        std::cout << "Back: " << card.back << '\n';
+    };
+
+    auto convertTime = [card](Grade grade){
+        if (card.gradeTimeIntervals.at(grade) < 1){
+            return std::to_string(static_cast<long>(card.gradeTimeIntervals.at(grade)*1440)) + "m";
+        }
+        return std::to_string(static_cast<long>(card.gradeTimeIntervals.at(grade))) + "d";
+    };
+    
+    auto printOptions = [card, convertTime](){
+        std::cout << "Choose an option:\n";
+        std::cout << shortTab << "[1] Again -> " << convertTime(Grade::Again) << '\n';
+        std::cout << shortTab << "[2] Hard  -> " << convertTime(Grade::Hard) << '\n';
+        std::cout << shortTab << "[3] Good  -> " << convertTime(Grade::Good) << '\n';
+        std::cout << shortTab << "[4] Easy  -> " << convertTime(Grade::Easy) << '\n';
+    };
+
+    static auto printHelp = [](){};
+
+    static const std::map<std::string, Grade> optionToGrade = {
+        {"1", Grade::Again},
+        {"2", Grade::Hard},
+        {"3", Grade::Good},
+        {"4", Grade::Easy}
+    };
+
+    enum class LearnOption {
+        GRADE, QUIT, SKIP, NEXT, REVEAL, BUBBLE, HELP, AUTO
+    };
+
+    static const std::map<std::string, LearnOption> LearnOptionMap = {
+        {"1", LearnOption::GRADE}, {"2", LearnOption::GRADE},
+        {"3", LearnOption::GRADE}, {"4", LearnOption::GRADE},
+
+        {"quit", LearnOption::QUIT}, {"q", LearnOption::QUIT},
+
+        {"skip", LearnOption::SKIP}, {"s", LearnOption::SKIP},
+
+        {"next", LearnOption::NEXT}, {"n", LearnOption::NEXT},
+
+        {"reveal", LearnOption::REVEAL}, {"r", LearnOption::REVEAL},
+
+        {"bubble", LearnOption::BUBBLE}, {"b", LearnOption::BUBBLE},
+
+        {"help", LearnOption::HELP}, {"h", LearnOption::HELP},
+
+        {"", LearnOption::AUTO}
+    };
+
+    Card tmp = card;
+    bool revealed = false;
+    bool break_flag = false;
+
+    printFront();
+    while (!break_flag){
+        std::string input = "";
+        std::cout << ">> ";
+        if (!std::getline(std::cin, input)){
+            std::cout << "Bad input.\n";
+            quit_flag = true;
+            break;
+        }
+
+        auto it = LearnOptionMap.find(input);
+        if (it == LearnOptionMap.end()){
+            std::cout << "Unknown command. Type `help` to show available commands.\n";
+            continue;
+        }
+
+        LearnOption option = LearnOptionMap.at(input);
+        switch (option){
+            case LearnOption::GRADE:
+                if (!revealed){
+                    std::cout << "This command is currently unavailable.\n";
+                    break;
+                }
+                break_flag = true;
+                tmp.review(optionToGrade.at(input));
+                break;
+            case LearnOption::QUIT:
+                quit_flag = true;
+                break_flag = true;
+                break;
+            case LearnOption::SKIP:
+                break_flag = true;
+                if (revealed){
+                    std::cout << "Cannot skip if card is revealed. Please use `next` to continue to the next card.\n";
+                    break;
+                }
+                tmp.review(Grade::Again);
+                break;
+            case LearnOption::NEXT:
+                if (!revealed){
+                    std::cout << "This command is currently unavailable.\n";
+                    break;
+                }
+                break_flag = true;
+                break;
+            case LearnOption::REVEAL:
+                revealed = true;
+                printFront();
+                printBack();
+                printOptions();
+                break;
+            case LearnOption::BUBBLE:
+                printFront();
+                if (revealed){
+                    printBack();
+                    printOptions();
+                }
+                break;
+            case LearnOption::HELP:
+                printHelp();
+                break;
+            case LearnOption::AUTO:
+                if (!revealed){
+                    revealed = true;
+                    printFront();
+                    printBack();
+                    printOptions();
+                    break;
+                }
+                break_flag = true;
+                tmp.review(Grade::Good);
+                break;
+        }
     }
-        return exeOut;
+    return tmp;
+}
+
+ExecutingOutput Command::quiz_learn_set_$set(int argc, char* argv[]){
+    if (!DataHandler.setExist(setName)) return shortExeOut(exeOut, 8, 3);
+    if (DataHandler.setSize(setName) == 0){
+        std::cout << "Set `" << setName << "` is empty.\n";
+        std::cout << "Use: $ quiz new --set " << setName << " --front <FRONT-CONTENT> --back <BACK-CONTENT>\n";
+        std::cout << shortTab << "to create a new card.\n";
+    }
+
+    std::vector<Card> cardset;
+    {   // declaring scope of 'out'
+        int out = DataHandler.getSet(cardset, setName);
+        if (out != 0) return shortExeOut(exeOut, out, 3);
+    }
+
+    for (size_t i = 0; i < cardset.size(); i++){
+        if (!cardset[i].due()) cardset.erase(cardset.begin() + i);
+    }
+    std::make_heap(cardset.begin(), cardset.end());
+
+    Card tmpCard;
+    bool quit_flag = false;
+    while (!cardset.empty()){
+        tmpCard = cardset.front();
+        if (tmpCard.interval >= 1) break;
+
+        tmpCard = learnCard(tmpCard, quit_flag);
+        if (quit_flag) break;
+        
+        std::pop_heap(cardset.begin(), cardset.end());
+        cardset.pop_back();
+
+        cardset.push_back(tmpCard);
+        std::push_heap(cardset.begin(), cardset.end());
+    }
+
+    if (!quit_flag){
+        std::cout << "Congratulations! You have finished this set for today.\n";
+    }
+    DataHandler.writeSet(cardset, setName);
+
+    return exeOut;
 }
 
 ExecutingOutput Command::quiz_learn_set_$set_item_$item(int argc, char* argv[]){
