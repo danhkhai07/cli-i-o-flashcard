@@ -28,6 +28,16 @@ static const std::set<int> DiscontinuedMsgCode = {
     -1, 0, 2 
 }; 
 
+/// @brief A shorter way to quickly input errorCode and errorPos of an ExecutingOutput object
+/// @param exeOut reference to the ExecutingOutput object
+/// @param code the errorCode   
+/// @param pos the errorPos
+ExecutingOutput shortExeOut(ExecutingOutput& exeOut, int code, int pos){
+    exeOut.errorCode = code;
+    exeOut.errorPos = pos;
+    return exeOut;
+}
+
 ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodePos,
     std::vector<std::pair<std::string, std::string>> options){
     CommandNode node = cmdTree[nodePos];
@@ -36,9 +46,7 @@ ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodeP
 
     if (argc - pos < 2){
         if (!node.terminal){
-            exeOut.errorCode = 2;
-            exeOut.errorPos = pos + 1;
-            return exeOut;
+            return shortExeOut(exeOut, 2, pos + 1);
         } else return node.execution(argc, argv);
     }
 
@@ -48,13 +56,9 @@ ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodeP
         switch (node.specExpected){
             case Specifier::None:
                 if (node.terminal){
-                    exeOut.errorCode = 5;
-                    exeOut.errorPos = pos + 1;
-                    return exeOut;
+                    return shortExeOut(exeOut, 5, pos + 1);
                 } else {
-                    exeOut.errorCode = 1;
-                    exeOut.errorPos = pos + 1;
-                    return exeOut;
+                    return shortExeOut(exeOut, 1, pos + 1);
                 }
             case Specifier::Set:
                 setName = argv[pos + 1]; 
@@ -70,9 +74,7 @@ ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodeP
                 exeOut.options.push_back({"-i, --item <INDEX>", "Index of the existing item in aforementioned set"});
                 try { itemPos = std::stoi(argv[pos + 1]); }
                 catch (std::logic_error) {
-                    exeOut.errorCode = 1;
-                    exeOut.errorPos = pos + 1;
-                    return exeOut;
+                    return shortExeOut(exeOut, 1, pos + 1);
                 }
                 it = node.subordinates.find("$item");
                 break;
@@ -80,22 +82,16 @@ ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodeP
                 if (node.terminal) {
                     return node.execution(argc, argv);
                 } else {
-                    exeOut.errorCode = -1;
-                    exeOut.errorPos = pos;
-                    return exeOut;
+                    return shortExeOut(exeOut, -1, pos);
                 }
 
             default:
-                exeOut.errorCode = -1;
-                exeOut.errorPos = pos + 1;
-                return exeOut;
+                return shortExeOut(exeOut, -1, pos + 1);
         }
         return lookUp(pos + 1, argc, argv, it->second, exeOut.options);
     } else {
         if (node.specExpected != Specifier::None){
-            exeOut.errorCode = -1;
-            exeOut.errorPos = pos;
-            return exeOut;
+            return shortExeOut(exeOut, -1, pos);
         } else return lookUp(pos + 1, argc, argv, it->second, exeOut.options);
     }
 }
@@ -233,6 +229,7 @@ void Command::addSubordinate(const int sub, const int dependingNode){
 }
 
 // EXECUTING FUNCTIONS
+
 ExecutingOutput Command::Zeus(int argc, char* argv[]){
     std::cout<< "ALL RETURN TO ME!";
     return ExecutingOutput(0, 0);
@@ -300,21 +297,15 @@ ExecutingOutput Command::quiz_new_set_$set(int argc, char* argv[]){
         }
 
         if ((!f_arg) && (!b_arg)){
-            exeOut.errorCode = 1;
-            exeOut.errorPos = i;
-            return exeOut;
+            return shortExeOut(exeOut, 1, i);
         }
     }
     if (front == "" || back == ""){
-        exeOut.errorCode = 2;
-        exeOut.errorPos = argc - 1;
-        return exeOut;
+        return shortExeOut(exeOut, 2, argc - 1);
     }
     
     if (!DataHandler.setExist(setName)){
-        exeOut.errorCode = 8;
-        exeOut.errorPos = 3;
-        return exeOut;
+        return shortExeOut(exeOut, 8, 3);
     }
 
     if (DataHandler.cardContentExist(setName, front) != -1){
@@ -339,8 +330,9 @@ ExecutingOutput Command::quiz_new_set_$set(int argc, char* argv[]){
 }
 
 ExecutingOutput Command::quiz_learn_set_$set(int argc, char* argv[]){
-    std::cout << "Reached.\n";
-    return ExecutingOutput(0, 0, "");
+    if (!DataHandler.setExist(setName)){
+        return
+    }
 }
 
 ExecutingOutput Command::quiz_learn_set_$set_item_$item(int argc, char* argv[]){
