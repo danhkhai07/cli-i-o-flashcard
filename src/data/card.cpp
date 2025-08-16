@@ -62,13 +62,10 @@ bool Card::due(){
 bool Card::operator<(const Card& other){
     using namespace std::chrono;
 
-    std::istringstream lhsIn(lastRefresh);
-    date::sys_time<seconds> lhs;
-    lhsIn >> date::parse("%F %T", lhs);
+    auto now = system_clock::now() + hours(7);
 
-    std::istringstream rhsIn(other.lastRefresh);
-    date::sys_time<seconds> rhs;
-    rhsIn >> date::parse("%F %T", rhs);
+    auto lhs = now - seconds(static_cast<int>(interval*86400));
+    auto rhs = now - seconds(static_cast<int>(other.interval*86400));
 
     return lhs < rhs;
 }
