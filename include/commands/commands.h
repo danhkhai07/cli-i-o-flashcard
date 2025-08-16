@@ -41,6 +41,7 @@ class COMMANDS_SHARED Command {
 
     // CORE VARIABLES & DEFINITIONS 
         Data DataHandler;
+        ExecutingOutput exeOut;
 
         int nodeCount = 0;
         enum Specifier {
@@ -170,7 +171,6 @@ class COMMANDS_SHARED Command {
         }
         ~Command(){}
 
-        ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodePos,
-            std::vector<std::pair<std::string, std::string>> options);
-        void resolveExecutingOutput(int argc, char* argv[], ExecutingOutput exeOut);
+        ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodePos);
+        void resolveExecutingOutput(int argc, char* argv[]);
 };

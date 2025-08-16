@@ -38,11 +38,8 @@ ExecutingOutput shortExeOut(ExecutingOutput& exeOut, int code, int pos){
     return exeOut;
 }
 
-ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodePos,
-    std::vector<std::pair<std::string, std::string>> options){
+ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodePos){
     CommandNode node = cmdTree[nodePos];
-    ExecutingOutput exeOut;
-    exeOut.options = options;
 
     if (argc - pos < 2){
         if (!node.terminal){
@@ -88,15 +85,15 @@ ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodeP
             default:
                 return shortExeOut(exeOut, -1, pos + 1);
         }
-        return lookUp(pos + 1, argc, argv, it->second, exeOut.options);
+        return lookUp(pos + 1, argc, argv, it->second);
     } else {
         if (node.specExpected != Specifier::None){
             return shortExeOut(exeOut, -1, pos);
-        } else return lookUp(pos + 1, argc, argv, it->second, exeOut.options);
+        } else return lookUp(pos + 1, argc, argv, it->second);
     }
 }
 
-void Command::resolveExecutingOutput(int argc, char* argv[], ExecutingOutput exeOut){
+void Command::resolveExecutingOutput(int argc, char* argv[]){
     // std::cout << exeOut.errorCode << " " << exeOut.errorPos << "\n";
     if (exeOut.errorCode == 0) return;
 
@@ -247,12 +244,7 @@ ExecutingOutput Command::quiz_about(int argc, char* argv[]){
 
 ExecutingOutput Command::quiz_new_set_$set(int argc, char* argv[]){
     // std::cout << "Reached.\n";
-    ExecutingOutput exeOut;
     if (argc <= 4){
-        std::pair<std::string, std::string> option_s = 
-            {"-s, --set <SET-NAME>", "Name of the new set"};
-        exeOut.options.push_back(option_s);
-
         int exeCode = DataHandler.newSet(setName);
         exeOut.errorCode = exeCode;
         if (exeCode != 0) exeOut.errorPos = 3;
@@ -261,13 +253,10 @@ ExecutingOutput Command::quiz_new_set_$set(int argc, char* argv[]){
     }
 
     exeOut.otherspecArgumentGuide = "--front <FRONT-CONTENT> --back <BACK-CONTENT>";
-    std::pair<std::string, std::string> option_s = 
-        {"-s, --set <SETNAME>", "Name of the existing set"};
     std::pair<std::string, std::string> option_f = 
         {"-f, --front <CONTENT>", "Set the front content. Space (' ') allowed. (required)"};
     std::pair<std::string, std::string> option_b = 
         {"-b, --back <CONTENT>", "Set the back content. Space (' ') allowed. (required)"};
-    exeOut.options.push_back(option_s);
     exeOut.options.push_back(option_f);
     exeOut.options.push_back(option_b);
 
