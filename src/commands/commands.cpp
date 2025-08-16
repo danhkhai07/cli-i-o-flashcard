@@ -28,6 +28,8 @@ static const std::set<int> DiscontinuedMsgCode = {
     -1, 0, 2 
 }; 
 
+static const std::string shortTab = "    ";
+
 /// @brief A shorter way to quickly input errorCode and errorPos of an ExecutingOutput object
 /// @param exeOut reference to the ExecutingOutput object
 /// @param code the errorCode   
@@ -97,12 +99,12 @@ void Command::resolveExecutingOutput(int argc, char* argv[]){
     // std::cout << exeOut.errorCode << " " << exeOut.errorPos << "\n";
     if (exeOut.errorCode == 0) return;
 
-    std::string shortTab = "    ";
-
-    bool discontinued = DiscontinuedMsgCode.find(exeOut.errorCode) != DiscontinuedMsgCode.end();
-    std::cout << "Error: " << ErrorCodeMessage.at(exeOut.errorCode);
-    if (discontinued) std::cout << ".\n";
-    else std::cout << ": `" << argv[exeOut.errorPos] << "`\n";
+    {
+        bool discontinued = DiscontinuedMsgCode.find(exeOut.errorCode) != DiscontinuedMsgCode.end();
+        std::cout << "Error: " << ErrorCodeMessage.at(exeOut.errorCode);
+        if (discontinued) std::cout << ".\n";
+        else std::cout << ": `" << argv[exeOut.errorPos] << "`\n";
+    }
 
     std::cout << "\nUsage: \n" << shortTab << "$ quiz";
     int currentNode = 0;
@@ -138,7 +140,7 @@ void Command::resolveExecutingOutput(int argc, char* argv[]){
         }
         if (discontinueGuide) break;
     }
-    if (cmdTree[currentNode].specExpected == Specifier::Other){
+    if (!discontinueGuide && cmdTree[currentNode].specExpected == Specifier::Other){
         std::cout << ' ' << exeOut.otherspecArgumentGuide;
         discontinueGuide = true;
     }
@@ -320,8 +322,9 @@ ExecutingOutput Command::quiz_new_set_$set(int argc, char* argv[]){
 
 ExecutingOutput Command::quiz_learn_set_$set(int argc, char* argv[]){
     if (!DataHandler.setExist(setName)){
-        return
+        return exeOut;
     }
+        return exeOut;
 }
 
 ExecutingOutput Command::quiz_learn_set_$set_item_$item(int argc, char* argv[]){
