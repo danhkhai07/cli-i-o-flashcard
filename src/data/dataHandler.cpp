@@ -117,6 +117,82 @@ int Data::listSets(std::vector<std::string>& out){
     return 0;
 }
 
+int Data::getSet(std::vector<Card>& out, std::string_view setName){
+    if (!setExist(setName)) return 8;        // set does not exist
+
+    std::vector<Card> tmpSet;
+    Card tmpCard;
+    for (auto it : dataset[setName]){
+        tmpCard.read(it);
+        tmpSet.push_back(tmpCard);
+    }
+
+    out = tmpSet;
+    return 0;
+}
+
+int Data::writeSet(std::vector<Card>& in, std::string_view setName){
+    if (!setExist(setName)) return 8;        // set does not exist
+    
+    nlohmann::json tmpSet = nlohmann::json::array();
+    nlohmann::json tmpCard = nlohmann::json::object();
+    for (Card it : in){
+        tmpCard["front"] = it.front;
+        tmpCard["back"] = it.back;
+        tmpCard["lastRefresh"] = it.lastRefresh;
+        std::string stateString;
+        switch (it.state){
+            case CardState::New: stateString = "New"; break;
+            case CardState::Learn: stateString = "Learn"; break;
+            case CardState::Review: stateString = "Review"; break;
+            case CardState::Lapse: stateString = "Lapse"; break;
+        }
+        tmpCard["state"] = stateString;
+        tmpCard["currentStep"] = it.currentStep;
+        tmpCard["easeFactor"] = it.easeFactor;
+        tmpCard["interval"] = it.interval;
+
+        tmpSet.push_back(tmpCard);
+    }
+
+    dataset[setName] = tmpSet;
+    return 0;
+}
+
+int Data::getCard(Card& out, std::string_view setName, const int idx){
+    if (!setExist(setName)) return 8;        // set does not exist
+    if (!cardIdxExist(setName, idx)) return 10;   // card index is out of setName's bound
+
+    Card tmp;
+    tmp.read(dataset[setName][idx]);
+
+    out = tmp;
+    return 0;
+}
+int Data::writeCard(Card& in, std::string_view setName, const int idx){
+    if (!setExist(setName)) return 8;        // set does not exist
+    if (!cardIdxExist(setName, idx)) return 10;   // card index is out of setName's bound
+
+    nlohmann::json tmpCard = nlohmann::json::object();
+    tmpCard["front"] = in.front;
+    tmpCard["back"] = in.back;
+    tmpCard["lastRefresh"] = in.lastRefresh;
+    std::string stateString;
+    switch (in.state){
+        case CardState::New: stateString = "New"; break;
+        case CardState::Learn: stateString = "Learn"; break;
+        case CardState::Review: stateString = "Review"; break;
+        case CardState::Lapse: stateString = "Lapse"; break;
+    }
+    tmpCard["state"] = stateString;
+    tmpCard["currentStep"] = in.currentStep;
+    tmpCard["easeFactor"] = in.easeFactor;
+    tmpCard["interval"] = in.interval;
+
+    dataset[setName][idx] = tmpCard;
+    return 0;
+}
+
 int Data::listCards(std::vector<nlohmann::json>& out, std::string_view setName){
     if (!out.empty()) out.clear();
     if (!setExist(setName)) return 8; // set does not exist

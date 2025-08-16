@@ -107,6 +107,40 @@ public:
      * @return 0 on success, 8 if set doesn't exist.
      */
     int listCards(std::vector<nlohmann::json>& out, std::string_view setName);
+    
+    /**
+     * @brief Returns the list of card in given set.
+     * @param out Reference to the input set with card objects.
+     * @param setName The name of the set.
+     * @return 0 on success, 8 if set doesn't exist.
+     */
+    int getSet(std::vector<Card>& out, std::string_view setName);
+
+    /**
+     * @brief Write the list of card in given set onto global Data json object.
+     * @param in Reference to the input set with card objects.
+     * @param setName The name of the set.
+     * @return 0 on success, 8 if set doesn't exist.
+     */
+    int writeSet(std::vector<Card>& in, std::string_view setName);
+
+    /**
+     * @brief Return the card with the matching index in given set.
+     * @param out Reference to the output card object.
+     * @param setName The name of the set.
+     * @param idx Index of card in aforementioned set.
+     * @return 0 on success, 8 if set doesn't exist, 9 if card index is out of bounds.
+     */
+    int getCard(Card& out, std::string_view setName, const int idx);
+
+    /**
+     * @brief Write the card with the matching index in given set onto global Data json object.
+     * @param in Reference to the input card object.
+     * @param setName The name of the set.
+     * @param idx Index of card in aforementioned set.
+     * @return 0 on success, 8 if set doesn't exist, 9 if card index is out of bounds.
+     */
+    int writeCard(Card& in, std::string_view setName, const int idx);
 
     /**
      * @brief Checks if a set exists.
@@ -126,7 +160,7 @@ public:
     /**
      * @brief Checks if a card index exists in the set.
      * @param setName The name of the set.
-     * @param idx The index to check.
+     * @param idx Index of card in aforementioned set.
      * @return true if valid, false otherwise.
      */
     bool cardIdxExist(std::string_view setName, const int idx);
