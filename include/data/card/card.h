@@ -83,7 +83,7 @@ public:
     void read(const nlohmann::json& cardView);
 
     /**
-     * @brief Checks if the card is due for review.
+     * @brief Checks if the card is due for review for TODAY.
      * @return true if due, false otherwise.
      */
     bool due();

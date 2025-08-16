@@ -62,8 +62,8 @@ bool Card::due(){
     if (in.fail()) return false;
     auto now = system_clock::now() + hours(7);
     
-    auto elapsed = now - last;
-    return elapsed.count() >= (interval * 86400.0);
+    auto elapsed = floor<date::days>(last - now);
+    return elapsed.count() <= 0;
 }
 
 bool Card::operator<(const Card& other){
