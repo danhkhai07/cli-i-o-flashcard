@@ -144,4 +144,11 @@ public:
      * @return Number of cards in the set, or 0 if set doesn't exist.
      */
     int setSize(std::string_view setName);
+
+    /**
+     * @brief Returns if the set is full.
+     * @param setName The name of the set.
+     * @return Returns true if set is full (> 2*1e9 items), false if not or set doesn't exist.
+     */
+    bool setFull(std::string_view setName);
 };

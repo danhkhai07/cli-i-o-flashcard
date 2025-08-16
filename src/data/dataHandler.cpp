@@ -61,7 +61,7 @@ int Data::addCard(std::string_view setName, std::string_view front, std::string_
     using namespace std::chrono;
 
     if (!setExist(setName)) return 8;        // set does not exist
-    if (setSize(setName) >= MAXIMUM_SET_SIZE) return 9; // set full
+    if (setFull(setName)) return 9; // set full
 
     nlohmann::json pData;
     pData["front"] = std::string(front);
@@ -164,4 +164,9 @@ bool Data::nameValid(std::string_view name){
 int Data::setSize(std::string_view setName){
     if (!setExist(setName)) return 0;
     return static_cast<int>(dataset[setName].size());
+}
+
+bool Data::setFull(std::string_view setName){
+    if (!setExist(setName)) return false;
+    if (setSize(setName) > MAXIMUM_SET_SIZE) return true;
 }
