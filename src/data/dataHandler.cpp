@@ -6,7 +6,7 @@
 #include <climits>
 #include <chrono>
 
-static const int MAXIMUM_SET_SIZE = 2*1e9;
+static const int MAXIMUM_SET_SIZE = static_cast<int>(2e9);
 
 std::filesystem::path Data::getExecutableDirectory(char* argv0){
     std::filesystem::path pth = std::filesystem::canonical(std::filesystem::path(argv0)).parent_path();
@@ -245,4 +245,5 @@ int Data::setSize(std::string_view setName){
 bool Data::setFull(std::string_view setName){
     if (!setExist(setName)) return false;
     if (setSize(setName) > MAXIMUM_SET_SIZE) return true;
+    return false;
 }
