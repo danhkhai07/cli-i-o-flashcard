@@ -547,25 +547,7 @@ ExecutingOutput Command::quiz_learn_set_$set(int argc, char* argv[]){
 
 ExecutingOutput Command::quiz_learn_set_$set_item_$item(int argc, char* argv[]){
     // std::cout << "Reached.\n";
-    if (!DataHandler.setExist(setName)) return shortExeOut(exeOut, 8, 3);
-    if (!DataHandler.cardIdxExist(setName, itemPos)) return shortExeOut(exeOut, 10, 5);
-
-    Card tmpCard;
-    {   // declaring scope of 'out'
-        int out = DataHandler.getCard(tmpCard, setName, itemPos);
-        if (out != 0) return shortExeOut(exeOut, out, 3);
-    }
-
-    bool quit_flag = false;
-    std::cout << "Use `help` to show available commands.\n";
-    while (tmpCard.interval < 1){
-        tmpCard = learnCard(tmpCard, quit_flag);
-    }
-    if (!quit_flag) std::cout << "Card [" << itemPos << "] of set `"<< setName << "` is finished for today.\n";
-
-    DataHandler.writeCard(tmpCard, setName, itemPos);
-
-    return exeOut;
+    return ExecutingOutput(0, 0, "");
 }
 
 ExecutingOutput Command::quiz_delete_all(int argc, char* argv[]){
