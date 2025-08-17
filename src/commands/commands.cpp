@@ -297,7 +297,10 @@ ExecutingOutput Command::quiz_new_set_$set(int argc, char* argv[]){
         std::cout << "Card front already exists. Are you sure to add the card?\n";
         while (answer == ""){
             std::cout << "[Y/N] ";
-            if (!(std::getline(std::cin, answer))) return exeOut;
+            if (!(std::getline(std::cin, answer))){
+                std::cerr << "Bad input.\n";
+                return exeOut;
+            }
             if (answer != "Y" && answer != "y" && answer != "N" && answer != "n") answer = "";
         }
         if (answer == "N" || answer == "n"){
@@ -387,7 +390,7 @@ Card Command::learnCard(const Card& card, bool& quit_flag){
         std::string input = "";
         std::cout << ">> ";
         if (!std::getline(std::cin, input)){
-            std::cout << "Bad input.\n";
+            std::cerr << "Bad input.\n";
             quit_flag = true;
             break;
         }
@@ -486,65 +489,262 @@ ExecutingOutput Command::quiz_learn_set_$set(int argc, char* argv[]){
         cardset.push_back(tmpCard);
         std::push_heap(cardset.begin(), cardset.end());
     }
-
     if (!quit_flag){
-        std::cout << "Congratulations! You have finished this set for today.\n";
+        std::cout << "Congratulations! You have finished set `" << setName << "` for today.\n";
     }
+
     DataHandler.writeSet(cardset, setName);
 
     return exeOut;
 }
 
 ExecutingOutput Command::quiz_learn_set_$set_item_$item(int argc, char* argv[]){
-    std::cout << "Reached.\n";
-    return ExecutingOutput(0, 0, "");
+    // std::cout << "Reached.\n";
+    if (!DataHandler.setExist(setName)) return shortExeOut(exeOut, 8, 3);
+    if (!DataHandler.cardIdxExist(setName, itemPos)) return shortExeOut(exeOut, 10, 5);
+
+    Card tmpCard;
+    {   // declaring scope of 'out'
+        int out = DataHandler.getCard(tmpCard, setName, itemPos);
+        if (out != 0) return shortExeOut(exeOut, out, 3);
+    }
+
+    bool quit_flag = false;
+    while (tmpCard.interval < 1){
+        tmpCard = learnCard(tmpCard, quit_flag);
+    }
+    if (!quit_flag) std::cout << "Card [" << itemPos << "] of set `"<< setName << "` is finished for today.\n";
+
+    DataHandler.writeCard(tmpCard, setName, itemPos);
+
+    return exeOut;
 }
 
 ExecutingOutput Command::quiz_delete_all(int argc, char* argv[]){
-    return ExecutingOutput(0, 0);
+    std::string answer = "";
+    std::cout << "This action will wipe all data. Are you sure to proceed?\n";
+    while (answer == ""){
+        std::cout << "[Y/N] ";
+        if (!(std::getline(std::cin, answer))){
+            std::cerr << "Bad input.\n";
+            return exeOut;
+        }
+        if (answer != "Y" && answer != "y" && answer != "N" && answer != "n") answer = "";
+    }
+    if (answer == "N" || answer == "n"){
+        std::cout << "Data flush has been discarded.\n";
+        return exeOut;
+    }
+
+    DataHandler.flushFile();
+    std::cout << "All data has been wiped.\n";
+
+    return exeOut;
 }
 
 ExecutingOutput Command::quiz_delete_set_$set(int argc, char* argv[]){
-    std::cout << "Reached.\n";
-    return ExecutingOutput(0, 0, "");
+    if (!DataHandler.setExist(setName)) return shortExeOut(exeOut, 8, 3);
+
+    DataHandler.killSet(setName);
+    std::cout << "Set `" << setName << "` has been deleted.\n";
+
+    return exeOut;
 }
 
 ExecutingOutput Command::quiz_delete_set_$set_item_$item(int argc, char* argv[]){
-    std::cout << "Reached.\n";
-    return ExecutingOutput(0, 0, "");
+    if (!DataHandler.setExist(setName)) return shortExeOut(exeOut, 8, 3);
+    if (!DataHandler.cardIdxExist(setName, itemPos)) return shortExeOut(exeOut, 10, 5);
+
+    DataHandler.deleteCard(setName, itemPos);
+    std::cout << "Card [" << itemPos << "] of set `" << setName << "` has been deleted.\n";
+
+    return exeOut;
 }
 
 ExecutingOutput Command::quiz_rename_set_$set_$newSetName(int argc, char* argv[]){
-    std::cout << "Reached.\n";
-    return ExecutingOutput(0, 0, "");
+    if (!DataHandler.setExist(setName)) return shortExeOut(exeOut, 8, 3);
+    if (!DataHandler.nameValid(newSetName)) return shortExeOut(exeOut, 6, 4);
+
+    DataHandler.renameSet(setName, newSetName);
+    std::cout << "Set `" << setName << "` has been renamed to `" << newSetName << "`.\n";
+
+    return exeOut;
 }
 
 ExecutingOutput Command::quiz_set(int argc, char* argv[]){
-    std::cout << "Reached.\n";
-    return ExecutingOutput(0, 0, "");
+    std::vector<std::string> out;
+    DataHandler.listSets(out);
+
+    if (out.empty()){
+        std::cout << "No set has been created yet. Use the following commands to start.\n";
+        std::cout << "Use: $ quiz new --set <SET-NAME>\n";
+        std::cout << shortTab << "to create a new set.\n";
+        std::cout << "Use: $ quiz new --set <SET-NAME> --front \"<FRONT-CONTENT>\" --back \"<BACK-CONTENT>\"\n";
+        std::cout << shortTab << "to create a new card.\n";
+        return exeOut;
+    }
+   
+    auto printSetStatus = [this, out](size_t idx){
+        if (idx < 0 && idx >= out.size()){
+            std::cerr << "printSetStatus: Bad access ([" << idx << "] on dataset.\n";
+            return;
+        }
+        std::cout << "Set `" << out[idx] << "`:\n";
+        std::cout << shortTab << "- Total card(s): " << DataHandler.setSize(out[idx]) << '\n';
+        std::cout << shortTab << "- Card(s) due today: " << DataHandler.dueToday(out[idx]) << '\n';
+    };
+
+    const int preview = 1;
+    for (size_t i = 0; i < preview; i++){
+        std::cout << '\n';
+        printSetStatus(i);
+    }
+
+    if (out.size() <= preview){
+        return exeOut;
+    }
+
+    size_t count = preview;
+    std::string answer = "";
+    std::cout << "\nPress Enter to see remaining set(s) (one by one)\n";
+    std::cout << "Press `all` to see all remaining set(s) (all at once)\n";
+    std::cout << "Press `q` to quit.\n";
+    while (answer == "" && count < out.size()){
+        std::cout << ":";
+        if (!(std::getline(std::cin, answer))){
+            std::cerr << "Bad input.\n";
+            return exeOut;
+        }
+
+        // delete ":"
+        std::cout << "\033[A\033[2K";
+
+        if (answer != "" && answer != "q" && answer != "all"){
+            answer = "";
+            continue;
+        }
+        if (answer == "q") break;
+        if (answer == "all"){
+            if (count == preview) std::cout << "\033[A\033[2K\033[A\033[2K\033[A\033[2K\033[A";
+            while (count < out.size()){
+                std::cout << '\n';
+                printSetStatus(count++);
+            }
+            break;
+        }
+
+        // delete the guide lines (Press Enter to...)
+        if (count == preview) std::cout << "\033[A\033[2K\033[A\033[2K\033[A\033[2K\033[A";
+        
+        std::cout << '\n';
+        printSetStatus(count++);
+    }
+
+    return exeOut;
 }
 
 ExecutingOutput Command::quiz_set_$set(int argc, char* argv[]){
-    std::cout << "Reached.\n";
-    return ExecutingOutput(0, 0, "");
+    if (!DataHandler.setExist(setName)) return shortExeOut(exeOut, 8, 3);
+
+    std::vector<Card> out;
+    DataHandler.listCards(out, setName);
+
+    if (out.empty()){
+        std::cout << "There is no card in set`" << setName << "`. Use the following command to start.\n";
+        std::cout << "Use: $ quiz new --set <SET-NAME> --front \"<FRONT-CONTENT>\" --back \"<BACK-CONTENT>\"\n";
+        std::cout << shortTab << "to create a new card.\n";
+        return exeOut;
+    }
+
+    auto printCardStatus = [this, &out](size_t idx){
+        if (idx < 0 && idx >= out.size()){
+            std::cerr << "printCardStatus: Bad access ([" << idx << "] on set`" << setName << "`.\n";
+            return;
+        }
+        
+        using namespace std::chrono;
+        std::cout << "[" << idx << "]:\n";
+        Card tmpCard = out[idx];
+        std::cout << shortTab << "- Front: " << tmpCard.front << '\n';
+        std::cout << shortTab << "- Back: " << tmpCard.back << '\n';
+        std::cout << shortTab << "- isDue: " << (tmpCard.due() ? "true" : "false") << '\n';
+
+        std::istringstream lastIn(tmpCard.lastRefresh);
+        date::sys_time<seconds> last;
+        lastIn >> date::parse("%F %T", last);
+        last += seconds(static_cast<long>(tmpCard.interval*86400));
+        auto now = system_clock::now() + hours(7);
+        std::cout << shortTab << "- Next review: " << date::format("%F", (tmpCard.due() ? now :last)) << '\n';
+    };
+
+    const int preview = 1;
+    for (size_t i = 0; i < preview; i++){
+        std::cout << '\n';
+        printCardStatus(i);
+    }
+
+    if (out.size() <= preview){
+        return exeOut;
+    }
+
+    size_t count = preview;
+    std::string answer = "";
+    std::cout << "\nPress Enter to see remaining card(s) (one by one)\n";
+    std::cout << "Press `all` to see all remaining card(s) (all at once)\n";
+    std::cout << "Press `q` to quit.\n";
+    while (answer == "" && count < out.size()){
+        std::cout << ":";
+        if (!(std::getline(std::cin, answer))){
+            std::cerr << "Bad input.\n";
+            return exeOut;
+        }
+
+        // delete ":"
+        std::cout << "\033[A\033[2K";
+
+        if (answer != "" && answer != "q" && answer != "all"){
+            answer = "";
+            continue;
+        }
+        if (answer == "q") break;
+        if (answer == "all"){
+            if (count == preview) std::cout << "\033[A\033[2K\033[A\033[2K\033[A\033[2K\033[A";
+            while (count < out.size()){
+                std::cout << '\n';
+                printCardStatus(count++);
+            }
+            break;
+        }
+
+        // delete the guide lines (Press Enter to...)
+        if (count == preview) std::cout << "\033[A\033[2K\033[A\033[2K\033[A\033[2K\033[A";
+        
+        std::cout << '\n';
+        printCardStatus(count++);
+    }
+
+
+    return exeOut;
 }
 
 ExecutingOutput Command::quiz_set_$set_item_$item(int argc, char* argv[]){
-    std::cout << "Reached.\n";
-    return ExecutingOutput(0, 0, "");
-}
+    if (!DataHandler.setExist(setName)) return shortExeOut(exeOut, 8, 3);
+    if (!DataHandler.cardIdxExist(setName, itemPos)) return shortExeOut(exeOut, 10, 5);
 
-ExecutingOutput Command::quiz_status(int argc, char* argv[]){
-    std::cout << "Reached.\n";
-    return ExecutingOutput(0, 0, "");
-}
+    using namespace std::chrono;
+    std::cout << "[" << itemPos<< "]:\n";
+    Card tmpCard;
+    DataHandler.getCard(tmpCard, setName, itemPos);
+    std::cout << shortTab << "- Front: " << tmpCard.front << '\n';
+    std::cout << shortTab << "- Back: " << tmpCard.back << '\n';
+    std::cout << shortTab << "- isDue: " << (tmpCard.due() ? "true" : "false") << '\n';
 
-ExecutingOutput Command::quiz_status_set_$set(int argc, char* argv[]){
-    std::cout << "Reached.\n";
-    return ExecutingOutput(0, 0, "");
-}
+    std::istringstream lastIn(tmpCard.lastRefresh);
+    date::sys_time<seconds> last;
+    lastIn >> date::parse("%F %T", last);
+    last += seconds(static_cast<long>(tmpCard.interval*86400));
+    auto now = system_clock::now() + hours(7);
+    std::cout << shortTab << "- Next review: " << date::format("%F", (tmpCard.due() ? now :last)) << '\n';
 
-ExecutingOutput Command::quiz_status_set_$set_item_$item(int argc, char* argv[]){
-    std::cout << "Reached.\n";
-    return ExecutingOutput(0, 0, "");
+    return exeOut;
 }
