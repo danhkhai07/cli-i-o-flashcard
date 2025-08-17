@@ -18,6 +18,12 @@ Easily create, manage, and review flashcards directly from your terminal.
 
 ## 📦 Installation
 
+### For users
+- Go to https://github.com/danhkhai07/cli-io-flashcard/releases
+- Download the latest release
+- Extract file and move onto "⚠️ Adding path to Environment Variables Guide (for Windows users)" below
+
+### For developers
 ```bash
 # Clone the repository
 git clone https://github.com/danhkhai07/cli-io-flashcard
