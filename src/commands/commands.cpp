@@ -338,6 +338,13 @@ Card Command::learnCard(const Card& card, bool& quit_flag){
         std::cout << shortTab << "[4] Easy  -> " << convertTime(Grade::Easy) << '\n';
     };
 
+    auto printReveal = [card, printFront, printBack, printOptions](){
+        printFront();
+        printBack();
+        std::cout << '\n';
+        printOptions();
+    };
+
     static auto printHelp = [](){};
 
     static const std::map<std::string, Grade> optionToGrade = {
@@ -422,9 +429,7 @@ Card Command::learnCard(const Card& card, bool& quit_flag){
                 break;
             case LearnOption::REVEAL:
                 revealed = true;
-                printFront();
-                printBack();
-                printOptions();
+                printReveal();
                 break;
             case LearnOption::BUBBLE:
                 printFront();
@@ -439,9 +444,7 @@ Card Command::learnCard(const Card& card, bool& quit_flag){
             case LearnOption::AUTO:
                 if (!revealed){
                     revealed = true;
-                    printFront();
-                    printBack();
-                    printOptions();
+                    printReveal();
                     break;
                 }
                 break_flag = true;
