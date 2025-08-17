@@ -20,8 +20,8 @@ Easily create, manage, and review flashcards directly from your terminal.
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/quiz-cli.git
-cd quiz-cli
+git clone https://github.com/danhkhai07/cli-io-flashcard
+cd cli-io-flashcard
 
 # Build with CMake
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
