@@ -85,11 +85,11 @@ int Data::killSet(std::string_view setName){
     return 0;
 }
 
-int Data::deleteCard(std::string_view setName, const int cardPos){
+int Data::deleteCard(std::string_view setName, const int idx){
     if (!setExist(setName)) return 8;   // set does not exist
-    if (!cardIdxExist(setName, cardPos)) return 10; // invalid card index
+    if (!cardIdxExist(setName, idx)) return 10; // invalid card index
 
-    dataset[setName].erase(dataset[setName].begin() + cardPos);
+    dataset[setName].erase(dataset[setName].begin() + idx);
     save();
     return 0;
 }
@@ -195,12 +195,16 @@ int Data::writeCard(Card& in, std::string_view setName, const int idx){
     return 0;
 }
 
-int Data::listCards(std::vector<nlohmann::json>& out, std::string_view setName){
+int Data::listCards(std::vector<Card>& out, std::string_view setName){
     if (!out.empty()) out.clear();
     if (!setExist(setName)) return 8; // set does not exist
+
+    Card tmpCard;
     for (auto it = dataset[setName].begin(); it != dataset[setName].end(); ++it){
-        out.push_back(*it);
+        tmpCard.read(*it);
+        out.push_back(tmpCard);
     }
+
     return 0;
 }
 
@@ -248,4 +252,18 @@ bool Data::setFull(std::string_view setName){
     if (!setExist(setName)) return false;
     if (setSize(setName) > MAXIMUM_SET_SIZE) return true;
     return false;
+}
+
+int Data::dueToday(std::string_view setName){
+    if (!setExist(setName)) return 0;
+
+    std::vector<Card> cardset;
+    if (getSet(cardset, setName) != 0) return 0;
+
+    int count = 0;
+    for (Card it : cardset){
+        if (it.due()) count++;
+    }
+
+    return count;
 }
