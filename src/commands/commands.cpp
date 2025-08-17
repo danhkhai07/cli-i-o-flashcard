@@ -222,6 +222,11 @@ ExecutingOutput Command::Zeus(int argc, char* argv[]){
     return ExecutingOutput(0, 0);
 }
 
+ExecutingOutput Command::quiz_version(int argc, char* argv[]){
+    std::cout << "CLI-IO-Flashcard 1.0.0\n";
+    return exeOut;
+}
+
 ExecutingOutput Command::quiz_help(int argc, char* argv[]){
     std::cout << "Call an ambulance!\n";
     return ExecutingOutput(0, 0);
@@ -528,3 +533,7 @@ ExecutingOutput Command::quiz_set_$set_item_$item(int argc, char* argv[]){
     std::cout << "Reached.\n";
     return ExecutingOutput(0, 0, "");
 }
+
+// ExecutingOutput Command::quiz_status(int argc, char* argv[]);
+// ExecutingOutput Command::quiz_status_set_$set(int argc, char* argv[]);
+// ExecutingOutput Command::quiz_status_set_$set_item_$item(int argc, char* argv[]);

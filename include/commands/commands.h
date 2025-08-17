@@ -85,6 +85,7 @@ class COMMANDS_SHARED Command {
 
         // EXECUTING FUNCTIONS
         ExecutingOutput Zeus(int argc, char* argv[]);
+        ExecutingOutput quiz_version(int argc, char* argv[]);
         ExecutingOutput quiz_help(int argc, char* argv[]);
         ExecutingOutput quiz_about(int argc, char* argv[]);
         ExecutingOutput quiz_new_set_$set(int argc, char* argv[]);
@@ -97,6 +98,10 @@ class COMMANDS_SHARED Command {
         ExecutingOutput quiz_set(int argc, char* argv[]);
         ExecutingOutput quiz_set_$set(int argc, char* argv[]);
         ExecutingOutput quiz_set_$set_item_$item(int argc, char* argv[]);
+        ExecutingOutput quiz_status(int argc, char* argv[]);
+        ExecutingOutput quiz_status_set_$set(int argc, char* argv[]);
+        ExecutingOutput quiz_status_set_$set_item_$item(int argc, char* argv[]);
+
     public:
         Command(int argc, char* argv[]){
             // Assign DataHandler
@@ -107,35 +112,43 @@ class COMMANDS_SHARED Command {
                 [this](int argc, char* argv[]) { return quiz_help(argc, argv); });
             
             // 1st layer
-            int root_help      = addCommandNode("help", Specifier::None, root,
+            int root_version    = addCommandNode("--version", Specifier::None, root,
+                [this](int argc, char* argv[]) { return quiz_version(argc, argv); });
+            int root_v          = addCommandNode("-v", Specifier::None, root,
+                [this](int argc, char* argv[]) { return quiz_version(argc, argv); });
+            int root_help       = addCommandNode("help", Specifier::None, root,
                 [this](int argc, char* argv[]) { return quiz_help(argc, argv); });
-            int root_about     = addCommandNode("about", Specifier::None, root,
+            int root_about      = addCommandNode("about", Specifier::None, root,
                 [this](int argc, char* argv[]) { return quiz_about(argc, argv); });
-            int root_new       = addCommandNode("new", Specifier::None, root);
-            int root_learn     = addCommandNode("learn", Specifier::None, root);
-            int root_delete    = addCommandNode("delete", Specifier::None, root);
-            int root_rename    = addCommandNode("rename", Specifier::None, root);
-            int root_set   = addCommandNode("--set", Specifier::Set, root, 
+            int root_new        = addCommandNode("new", Specifier::None, root);
+            int root_learn      = addCommandNode("learn", Specifier::None, root);
+            int root_delete     = addCommandNode("delete", Specifier::None, root);
+            int root_rename     = addCommandNode("rename", Specifier::None, root);
+            int root_set        = addCommandNode("--set", Specifier::Set, root, 
                 [this](int argc, char* argv[]) { return quiz_set(argc, argv); });
-            int root_s     = addCommandNode("-s", Specifier::Set, root,
+            int root_s          = addCommandNode("-s", Specifier::Set, root,
                 [this](int argc, char* argv[]) { return quiz_set(argc, argv); });
+            int root_status     = addCommandNode("status", Specifier::None, root,
+                [this](int argc, char* argv[]) { return quiz_status(argc, argv); });
 
             // 2nd layer
-            int root_set_$set  = addCommandNode("$set", Specifier::None, root_set, 
+            int root_set_$set   = addCommandNode("$set", Specifier::None, root_set, 
                 [this](int argc, char* argv[]) { return quiz_set_$set(argc, argv); });
                 addSubordinate(root_set_$set, root_s);
-            int root_new_set   = addCommandNode("--set", Specifier::Set, root_new);
-            int root_new_s     = addCommandNode("-s", Specifier::Set, root_new);
-            int root_learn_set = addCommandNode("--set", Specifier::Set, root_learn);
-            int root_learn_s   = addCommandNode("-s", Specifier::Set, root_learn);
+            int root_new_set    = addCommandNode("--set", Specifier::Set, root_new);
+            int root_new_s      = addCommandNode("-s", Specifier::Set, root_new);
+            int root_learn_set  = addCommandNode("--set", Specifier::Set, root_learn);
+            int root_learn_s    = addCommandNode("-s", Specifier::Set, root_learn);
             int root_delete_set = addCommandNode("--set", Specifier::Set, root_delete);
             int root_delete_s   = addCommandNode("-s", Specifier::Set, root_delete);
-            int root_delete_all     = addCommandNode("--all", Specifier::None, root_delete, 
+            int root_delete_all = addCommandNode("--all", Specifier::None, root_delete, 
                 [this](int argc, char* argv[]) { return quiz_delete_all(argc, argv); });
-            int root_delete_a     = addCommandNode("-a", Specifier::None, root_delete, 
+            int root_delete_a   = addCommandNode("-a", Specifier::None, root_delete, 
                 [this](int argc, char* argv[]) { return quiz_delete_all(argc, argv); });
             int root_rename_set = addCommandNode("--set", Specifier::Set, root_rename);
             int root_rename_s   = addCommandNode("-s", Specifier::Set, root_rename);
+            int root_status_set = addCommandNode("--set", Specifier::Set, root);
+            int root_status_s   = addCommandNode("-s", Specifier::Set, root);
             
             // 3rd layer
             int root_set_$set_item = addCommandNode("--item", Specifier::Item, root_set_$set);
@@ -151,6 +164,9 @@ class COMMANDS_SHARED Command {
                 addSubordinate(root_delete_set_$set, root_delete_s);
             int root_rename_set_$set  = addCommandNode("$set", Specifier::NewSetName, root_rename_set);
                 addSubordinate(root_rename_set_$set, root_rename_s);
+            int root_status_set_$set  = addCommandNode("$set", Specifier::None, root_status_set, 
+                [this](int argc, char* argv[]) { return quiz_status_set_$set(argc, argv); });
+                addSubordinate(root_rename_set_$set, root_rename_s);
 
             // 4th layer
             int root_set_$set_item_$item = addCommandNode("$item", Specifier::None, root_set_$set_item, 
@@ -162,6 +178,8 @@ class COMMANDS_SHARED Command {
             int root_delete_set_$set_i    = addCommandNode("-i", Specifier::Item, root_delete_set_$set);
             int root_rename_set_$set_$newSetName = addCommandNode("$newSetName", Specifier::None, root_rename_set_$set,
                 [this](int argc, char* argv[]) { return quiz_rename_set_$set_$newSetName(argc, argv); });
+            int root_status_set_$set_item = addCommandNode("--item", Specifier::Item, root_status_set_$set);
+            int root_status_set_$set_i    = addCommandNode("-i", Specifier::Item, root_status_set_$set);
 
             // 5th layer
             int root_learn_set_$set_item_$item = addCommandNode("$item", Specifier::None, root_learn_set_$set_item,
@@ -170,6 +188,9 @@ class COMMANDS_SHARED Command {
             int root_delete_set_$set_item_$item = addCommandNode("$item", Specifier::None, root_delete_set_$set_item,
                 [this](int argc, char* argv[]) { return quiz_delete_set_$set_item_$item(argc, argv); });
                 addSubordinate(root_delete_set_$set_item_$item, root_delete_set_$set_i);
+            int root_status_set_$set_item_$item = addCommandNode("$item", Specifier::None, root_status_set_$set_item,
+                [this](int argc, char* argv[]) { return quiz_status_set_$set_item_$item(argc, argv); });
+                addSubordinate(root_status_set_$set_item_$item, root_status_set_$set_i);
                 
         }
         ~Command(){}
