@@ -52,6 +52,7 @@ bool Card::due(){
     std::istringstream in(lastRefresh);
     date::sys_time<seconds> last;
     in >> date::parse("%F %T", last);
+    last += seconds(static_cast<long>(interval*86400));
     if (in.fail()) return false;
     auto now = system_clock::now() + hours(7);
     
