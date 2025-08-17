@@ -9,7 +9,7 @@ Easily create, manage, and review flashcards directly from your terminal.
 
 - ⚡ Fast and lightweight CLI experience
 - 🗂️ Organize flashcards into sets
-- 🔄 Spaced repetition scheduling (SM-2 inspired)
+- 🔄 Spaced repetition scheduling (Anki inspired)
 - 🎲 Shuffle, reveal, skip, or auto-grade cards
 - 📖 Simple text-based interface — no GUI needed
 - 🛠️ Extensible command system
@@ -24,11 +24,10 @@ git clone https://github.com/yourusername/quiz-cli.git
 cd quiz-cli
 
 # Build with CMake
-cmake -S . -B build
-cmake --build build --config Release
-cmake --install build
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel
 ```
--> The executable will be in `install/bin/` at the parent folder
+-> The executable will be in `./build/bin/` at the parent folder
 
 ---
 

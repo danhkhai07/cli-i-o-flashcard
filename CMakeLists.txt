@@ -31,11 +31,11 @@ target_link_libraries(quiz PRIVATE CLI)
 install(TARGETS quiz
     RUNTIME DESTINATION bin
 )
-# Include folder
-install(DIRECTORY include
+
+install (DIRECTORY data
     DESTINATION .
 )
 
-install (DIRECTORY data
+install (FILES LICENSE README.md
     DESTINATION .
 )
