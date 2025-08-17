@@ -106,7 +106,7 @@ public:
      * @param setName The name of the set to list cards from.
      * @return 0 on success, 8 if set doesn't exist.
      */
-    int listCards(std::vector<nlohmann::json>& out, std::string_view setName);
+    int listCards(std::vector<Card>& out, std::string_view setName);
     
     /**
      * @brief Returns the list of card in given set.
@@ -185,4 +185,11 @@ public:
      * @return Returns true if set is full (> 2*1e9 items), false if not or set doesn't exist.
      */
     bool setFull(std::string_view setName);
+
+    /**
+     * @brief Returns the number of due card today.
+     * @param setName The name of the set.
+     * @return Returns the number of due card, 0 if no card is due or if set doesn't exist.
+     */
+    int dueToday(std::string_view setName);
 };
