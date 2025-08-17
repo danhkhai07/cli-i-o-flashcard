@@ -65,7 +65,7 @@ ExecutingOutput Command::lookUp(int pos, int argc, char* argv[], const int nodeP
             case Specifier::Set:
                 setName = argv[pos + 1]; 
                 it = node.subordinates.find("$set");
-                exeOut.options.push_back({"-s, --set <SET-NAME>", "Name of the existing set. No spaces and double quote (\") is allowed."});
+                exeOut.options.push_back({"-s, --set <SET-NAME>", "Name of the existing set."});
                 break;
              case Specifier::NewSetName:
                 exeOut.options.push_back({"<NEW-SET-NAME>", "Name of the new set"});
@@ -249,9 +249,9 @@ ExecutingOutput Command::quiz_new_set_$set(int argc, char* argv[]){
 
     exeOut.otherspecArgumentGuide = "--front \"<FRONT-CONTENT>\" --back \"<BACK-CONTENT>\"";
     std::pair<std::string, std::string> option_f = 
-        {"-f, --front <CONTENT>", "Set the front content. Space (' ') allowed. (required)"};
+        {"-f, --front \"<CONTENT>\"", "Set the front content. (required)"};
     std::pair<std::string, std::string> option_b = 
-        {"-b, --back <CONTENT>", "Set the back content. Space (' ') allowed. (required)"};
+        {"-b, --back \"<CONTENT>\"", "Set the back content. (required)"};
     exeOut.options.push_back(option_f);
     exeOut.options.push_back(option_b);
 
@@ -341,11 +341,12 @@ Card Command::learnCard(const Card& card, bool& quit_flag){
     auto printReveal = [card, printFront, printBack, printOptions](){
         printFront();
         printBack();
-        std::cout << '\n';
         printOptions();
     };
 
-    static auto printHelp = [](){};
+    static auto printHelp = [](){
+        std::cout << "Press Enter, `reveal` or `r` to reveal card's back.\n";
+    };
 
     static const std::map<std::string, Grade> optionToGrade = {
         {"1", Grade::Again},
@@ -382,7 +383,6 @@ Card Command::learnCard(const Card& card, bool& quit_flag){
     bool break_flag = false;
 
     printFront();
-    std::cout << "Press Enter, `reveal` or `r` to reveal card's back.\n";
     while (!break_flag){
         std::string input = "";
         std::cout << ">> ";
@@ -400,6 +400,16 @@ Card Command::learnCard(const Card& card, bool& quit_flag){
 
         LearnOption option = LearnOptionMap.at(input);
         switch (option){
+            case LearnOption::AUTO:
+                if (revealed){
+                    break_flag = true;
+                    tmp.review(Grade::Good);
+                    break;
+                }
+            case LearnOption::REVEAL:
+                revealed = true;
+                printReveal();
+                break;
             case LearnOption::GRADE:
                 if (!revealed){
                     std::cout << "This command is currently unavailable.\n";
@@ -427,10 +437,6 @@ Card Command::learnCard(const Card& card, bool& quit_flag){
                 }
                 break_flag = true;
                 break;
-            case LearnOption::REVEAL:
-                revealed = true;
-                printReveal();
-                break;
             case LearnOption::BUBBLE:
                 printFront();
                 if (revealed){
@@ -440,15 +446,6 @@ Card Command::learnCard(const Card& card, bool& quit_flag){
                 break;
             case LearnOption::HELP:
                 printHelp();
-                break;
-            case LearnOption::AUTO:
-                if (!revealed){
-                    revealed = true;
-                    printReveal();
-                    break;
-                }
-                break_flag = true;
-                tmp.review(Grade::Good);
                 break;
         }
     }
@@ -537,6 +534,17 @@ ExecutingOutput Command::quiz_set_$set_item_$item(int argc, char* argv[]){
     return ExecutingOutput(0, 0, "");
 }
 
-// ExecutingOutput Command::quiz_status(int argc, char* argv[]);
-// ExecutingOutput Command::quiz_status_set_$set(int argc, char* argv[]);
-// ExecutingOutput Command::quiz_status_set_$set_item_$item(int argc, char* argv[]);
+ExecutingOutput Command::quiz_status(int argc, char* argv[]){
+    std::cout << "Reached.\n";
+    return ExecutingOutput(0, 0, "");
+}
+
+ExecutingOutput Command::quiz_status_set_$set(int argc, char* argv[]){
+    std::cout << "Reached.\n";
+    return ExecutingOutput(0, 0, "");
+}
+
+ExecutingOutput Command::quiz_status_set_$set_item_$item(int argc, char* argv[]){
+    std::cout << "Reached.\n";
+    return ExecutingOutput(0, 0, "");
+}
