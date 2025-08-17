@@ -242,7 +242,7 @@ ExecutingOutput Command::quiz_new_set_$set(int argc, char* argv[]){
         return exeOut;
     }
 
-    exeOut.otherspecArgumentGuide = "--front <FRONT-CONTENT> --back <BACK-CONTENT>";
+    exeOut.otherspecArgumentGuide = "--front \"<FRONT-CONTENT>\" --back \"<BACK-CONTENT>\"";
     std::pair<std::string, std::string> option_f = 
         {"-f, --front <CONTENT>", "Set the front content. Space (' ') allowed. (required)"};
     std::pair<std::string, std::string> option_b = 
@@ -370,6 +370,7 @@ Card Command::learnCard(const Card& card, bool& quit_flag){
     bool break_flag = false;
 
     printFront();
+    std::cout << "Press Enter, `reveal` or `r` to reveal card's back.\n";
     while (!break_flag){
         std::string input = "";
         std::cout << ">> ";
@@ -450,7 +451,7 @@ ExecutingOutput Command::quiz_learn_set_$set(int argc, char* argv[]){
     if (!DataHandler.setExist(setName)) return shortExeOut(exeOut, 8, 3);
     if (DataHandler.setSize(setName) == 0){
         std::cout << "Set `" << setName << "` is empty.\n";
-        std::cout << "Use: $ quiz new --set " << setName << " --front <FRONT-CONTENT> --back <BACK-CONTENT>\n";
+        std::cout << "Use: $ quiz new --set " << setName << " --front \"<FRONT-CONTENT>\" --back \"<BACK-CONTENT>\"\n";
         std::cout << shortTab << "to create a new card.\n";
     }
 
