@@ -233,7 +233,7 @@ ExecutingOutput Command::quiz_help(int argc, char* argv[]){
     std::cout << shortTab << "$ quiz <command> [options]\n\n";
 
     std::cout << "Available commands:\n";
-    std::cout << shortTab << "version           Show the current version.\n";
+    std::cout << shortTab << "-v, --version     Show the current version.\n";
     std::cout << shortTab << "about             Show information about this program.\n";
     std::cout << shortTab << "help              Show this help message.\n";
     std::cout << shortTab << "--set             List all sets and their status.\n";
